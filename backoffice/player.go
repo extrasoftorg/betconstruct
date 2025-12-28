@@ -117,6 +117,7 @@ type AddPaymentToPlayerRequest struct {
 	Amount   AddPaymentToPlayerRequestAmount `json:"Amount"`
 	Note     string                          `json:"Info"`
 	Type     AddPaymentToPlayerRequestType   `json:"DocTypeInt"`
+	Currency string                          `json:"CurrencyId"`
 }
 
 func (c *client) AddPaymentToPlayer(ctx context.Context, req AddPaymentToPlayerRequest) error {
