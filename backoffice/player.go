@@ -87,11 +87,11 @@ func (c *client) ListPlayers(ctx context.Context, req ListPlayersRequest) ([]Lis
 }
 
 type AddPaymentToPlayerRequestAmount struct {
-	float64
+	Amount float64
 }
 
 func (a AddPaymentToPlayerRequestAmount) MarshalJSON() ([]byte, error) {
-	str := fmt.Sprintf("%.2f", a.float64)
+	str := fmt.Sprintf("%.2f", a.Amount)
 	return json.Marshal(str)
 }
 
