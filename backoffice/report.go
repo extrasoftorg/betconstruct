@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 )
@@ -37,7 +36,6 @@ func (c *client) ListSportBets(ctx context.Context, req ListSportBetsRequest) ([
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(string(body))
 	bets, err := makeRequest[listSportBetsResponse](
 		ctx,
 		http.MethodPost,
