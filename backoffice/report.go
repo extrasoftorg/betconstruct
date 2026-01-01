@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 )
@@ -18,10 +19,11 @@ func (d ListSportBetsRequestDate) MarshalJSON() ([]byte, error) {
 }
 
 type ListSportBetsRequest struct {
-	FromDate *ListSportBetsRequestDate `json:"StartDateLocal"`
-	ToDate   *ListSportBetsRequestDate `json:"EndDateLocal"`
-	PlayerID *PlayerID                 `json:"ClientId"`
-	Status   *SportBetStatus           `json:"State"`
+	FromDate   *ListSportBetsRequestDate `json:"StartDateLocal"`
+	ToDate     *ListSportBetsRequestDate `json:"EndDateLocal"`
+	PlayerID   *PlayerID                 `json:"ClientId"`
+	Status     *SportBetStatus           `json:"State"`
+	ToCurrency string                    `json:"ToCurrencyId"`
 }
 
 type listSportBetsResponse struct {
@@ -35,6 +37,7 @@ func (c *client) ListSportBets(ctx context.Context, req ListSportBetsRequest) ([
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(string(body))
 	bets, err := makeRequest[listSportBetsResponse](
 		ctx,
 		http.MethodPost,

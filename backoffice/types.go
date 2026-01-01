@@ -2,6 +2,7 @@ package backoffice
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 )
 
@@ -146,6 +147,18 @@ type SportBetStatus string
 
 func (s SportBetStatus) String() string {
 	return string(s)
+}
+
+var sportBetStatusIDMap = map[SportBetStatus]int{
+	SportBetStatusPending: 1,
+}
+
+func (s SportBetStatus) MarshalJSON() ([]byte, error) {
+	id, ok := sportBetStatusIDMap[s]
+	if !ok {
+		return nil, fmt.Errorf("unknown sport bet status: %s", s)
+	}
+	return json.Marshal(id)
 }
 
 func (s *SportBetStatus) UnmarshalJSON(b []byte) error {
