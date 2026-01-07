@@ -12,4 +12,8 @@ type Client interface {
 	AddPaymentToPlayer(ctx context.Context, req AddPaymentToPlayerRequest) error
 
 	ListSportBets(ctx context.Context, req ListSportBetsRequest) ([]SportBet, error)
+
+	ListPaymentMethods(ctx context.Context, req ListPaymentMethodsRequest) ([]*PaymentMethod, error)
+	FindPaymentMethodByName(ctx context.Context, name string) (*PaymentMethod, error)
+	UpdatePaymentMethod(ctx context.Context, method PaymentMethod) error
 }
