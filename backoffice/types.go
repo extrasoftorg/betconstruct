@@ -211,6 +211,10 @@ func (n *NumericBool) UnmarshalJSON(b []byte) error {
 
 type StringFloat64 float64
 
+func (s StringFloat64) Float64() float64 {
+	return float64(s)
+}
+
 func (s StringFloat64) MarshalJSON() ([]byte, error) {
 	return json.Marshal(fmt.Sprintf("%.2f", s))
 }
