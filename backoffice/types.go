@@ -379,13 +379,15 @@ func (g *PaymentMethodGroupIDs) UnmarshalJSON(b []byte) error {
 	return ErrInvalidPaymentMethodGroupIDs
 }
 
+type PartnerID int32
+
 type PaymentMethod struct {
 	ID                     int16                        `json:"system_id"`
 	SiteID                 int32                        `json:"site_system_id"`
 	CanDeposit             bool                         `json:"can_deposit"`
 	CanWithdraw            bool                         `json:"can_withdraw"`
 	Name                   string                       `json:"system_name"`
-	PartnerID              int16                        `json:"partner_id"`
+	PartnerID              PartnerID                    `json:"partner_id"`
 	IsActive               NumericBool                  `json:"is_active"`
 	DepositConfig          PaymentMethodConfig          `json:"deposit"`
 	WithdrawConfig         PaymentMethodConfig          `json:"withdraw"`
