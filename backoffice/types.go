@@ -189,6 +189,10 @@ type SportBet struct {
 
 type NumericBool bool
 
+func (n NumericBool) Bool() bool {
+	return bool(n)
+}
+
 func (n NumericBool) MarshalJSON() ([]byte, error) {
 	var v int
 	switch n {
