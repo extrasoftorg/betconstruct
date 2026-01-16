@@ -16,4 +16,6 @@ type Client interface {
 	ListPaymentMethods(ctx context.Context, req ListPaymentMethodsRequest) ([]*PaymentMethod, error)
 	FindPaymentMethodByName(ctx context.Context, name string) (*PaymentMethod, error)
 	UpdatePaymentMethod(ctx context.Context, method PaymentMethod) error
+	ListPartnerDomains(ctx context.Context, partnerID PartnerID) ([]PartnerDomain, error)
+	SetActiveDomain(ctx context.Context, domainID int32) error
 }
