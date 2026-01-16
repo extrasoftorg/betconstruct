@@ -121,3 +121,35 @@ func (c *client) UpdatePaymentMethod(ctx context.Context, method PaymentMethod) 
 	})
 	return err
 }
+
+type listPartnerDomainsResponse []PartnerDomain
+
+func (c *client) ListPartnerDomains(ctx context.Context, partnerID PartnerID) ([]PartnerDomain, error) {
+	domains, err := makeRequest[listPartnerDomainsResponse](ctx, http.MethodGet, "/Reference/GetPartnerDomains", nil, makeRequestOptions{
+		httpClient: c.httpClient,
+		authToken:  c.authToken,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return *domains, nil
+}
+
+type setActiveDomainRequest struct {
+	ID int32 `json:"Id"`
+}
+
+func (c *client) SetActiveDomain(ctx context.Context, domainID int32) error {
+	req := setActiveDomainRequest{
+		ID: domainID,
+	}
+	body, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+	_, err = makeRequest[any](ctx, http.MethodPost, "/Reference/SetActiveDomain", bytes.NewReader(body), makeRequestOptions{
+		httpClient: c.httpClient,
+		authToken:  c.authToken,
+	})
+	return err
+}

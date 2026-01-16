@@ -417,3 +417,22 @@ type PaymentMethod struct {
 }
 
 var ErrPaymentMethodNotFound = errors.New("payment method not found")
+
+type PartnerDomainStatus string
+
+func (p PartnerDomainStatus) String() string {
+	return string(p)
+}
+
+const (
+	PartnerDomainStatusReserved PartnerDomainStatus = "reserved"
+	PartnerDomainStatusInactive PartnerDomainStatus = "inactive"
+	PartnerDomainStatusActive   PartnerDomainStatus = "active"
+)
+
+type PartnerDomain struct {
+	ID        int32               `json:"Id"`
+	Name      string              `json:"Name"`
+	PartnerID PartnerID           `json:"PartnerId"`
+	Status    PartnerDomainStatus `json:"State"`
+}
