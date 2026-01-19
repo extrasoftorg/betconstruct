@@ -59,7 +59,7 @@ func makeRequest[T any](
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode >= 300 {
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
 		switch resp.StatusCode {
 		case http.StatusBadRequest:
 			return nil, ErrBadRequest
