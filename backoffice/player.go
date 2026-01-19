@@ -34,10 +34,7 @@ func (c *client) ListRegisteredPlayers(ctx context.Context, req ListRegisteredPl
 		http.MethodPost,
 		"/Client/GetClientRegistrationStatisticsDetails",
 		bytes.NewReader(body),
-		makeRequestOptions{
-			httpClient: c.httpClient,
-			authToken:  c.authToken,
-		},
+		c,
 	)
 	if err != nil {
 		return nil, err
@@ -75,10 +72,7 @@ func (c *client) ListPlayers(ctx context.Context, req ListPlayersRequest) ([]Lis
 		http.MethodPost,
 		"/Client/GetClients",
 		bytes.NewReader(body),
-		makeRequestOptions{
-			httpClient: c.httpClient,
-			authToken:  c.authToken,
-		},
+		c,
 	)
 	if err != nil {
 		return nil, err
@@ -130,10 +124,7 @@ func (c *client) AddPaymentToPlayer(ctx context.Context, req AddPaymentToPlayerR
 		http.MethodPost,
 		"/Client/CreateClientPaymentDocument",
 		bytes.NewReader(body),
-		makeRequestOptions{
-			httpClient: c.httpClient,
-			authToken:  c.authToken,
-		},
+		c,
 	)
 	if err != nil {
 		return err

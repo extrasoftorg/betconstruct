@@ -41,10 +41,7 @@ func (c *client) ListSportBets(ctx context.Context, req ListSportBetsRequest) ([
 		http.MethodPost,
 		"/Report/GetBetHistory",
 		bytes.NewReader(body),
-		makeRequestOptions{
-			httpClient: c.httpClient,
-			authToken:  c.authToken,
-		},
+		c,
 	)
 	if err != nil {
 		return nil, err

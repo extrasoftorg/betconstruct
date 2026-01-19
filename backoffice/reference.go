@@ -53,10 +53,7 @@ func (c *client) ListPaymentMethods(ctx context.Context, req ListPaymentMethodsR
 		return nil, err
 	}
 
-	methods, err := makeRequest[[]*PaymentMethod](ctx, http.MethodPost, "/Reference/PaymentAPI", bytes.NewReader(body), makeRequestOptions{
-		httpClient: c.httpClient,
-		authToken:  c.authToken,
-	})
+	methods, err := makeRequest[[]*PaymentMethod](ctx, http.MethodPost, "/Reference/PaymentAPI", bytes.NewReader(body), c)
 	if err != nil {
 		return nil, err
 	}
@@ -81,10 +78,7 @@ func (c *client) FindPaymentMethodByName(ctx context.Context, name string) (*Pay
 		return nil, err
 	}
 
-	methods, err := makeRequest[[]PaymentMethod](ctx, http.MethodPost, "/Reference/PaymentAPI", bytes.NewReader(body), makeRequestOptions{
-		httpClient: c.httpClient,
-		authToken:  c.authToken,
-	})
+	methods, err := makeRequest[[]PaymentMethod](ctx, http.MethodPost, "/Reference/PaymentAPI", bytes.NewReader(body), c)
 	if err != nil {
 		return nil, err
 	}
@@ -115,20 +109,14 @@ func (c *client) UpdatePaymentMethod(ctx context.Context, method PaymentMethod) 
 		return err
 	}
 
-	_, err = makeRequest[any](ctx, http.MethodPost, "/Reference/PaymentAPI", bytes.NewReader(body), makeRequestOptions{
-		httpClient: c.httpClient,
-		authToken:  c.authToken,
-	})
+	_, err = makeRequest[any](ctx, http.MethodPost, "/Reference/PaymentAPI", bytes.NewReader(body), c)
 	return err
 }
 
 type listPartnerDomainsResponse []PartnerDomain
 
 func (c *client) ListPartnerDomains(ctx context.Context, partnerID PartnerID) ([]PartnerDomain, error) {
-	domains, err := makeRequest[listPartnerDomainsResponse](ctx, http.MethodGet, "/Reference/GetPartnerDomains", nil, makeRequestOptions{
-		httpClient: c.httpClient,
-		authToken:  c.authToken,
-	})
+	domains, err := makeRequest[listPartnerDomainsResponse](ctx, http.MethodGet, "/Reference/GetPartnerDomains", nil, c)
 	if err != nil {
 		return nil, err
 	}
@@ -147,9 +135,6 @@ func (c *client) SetActiveDomain(ctx context.Context, domainID int32) error {
 	if err != nil {
 		return err
 	}
-	_, err = makeRequest[any](ctx, http.MethodPost, "/Reference/SetActiveDomain", bytes.NewReader(body), makeRequestOptions{
-		httpClient: c.httpClient,
-		authToken:  c.authToken,
-	})
+	_, err = makeRequest[any](ctx, http.MethodPost, "/Reference/SetActiveDomain", bytes.NewReader(body), c)
 	return err
 }

@@ -37,10 +37,7 @@ func (c *client) ListTransactions(ctx context.Context, req ListTransactionsReque
 		http.MethodPost,
 		"/Financial/GetDocumentsWithPaging",
 		bytes.NewReader(body),
-		makeRequestOptions{
-			httpClient: c.httpClient,
-			authToken:  c.authToken,
-		},
+		c,
 	)
 	if err != nil {
 		return nil, err
@@ -78,10 +75,7 @@ func (c *client) ListDeposits(ctx context.Context, req ListDepositsRequest) ([]D
 		http.MethodPost,
 		"/Financial/GetDepositsWithdrawalsWithPaging",
 		bytes.NewReader(body),
-		makeRequestOptions{
-			httpClient: c.httpClient,
-			authToken:  c.authToken,
-		},
+		c,
 	)
 	if err != nil {
 		return nil, err
@@ -117,10 +111,7 @@ func (c *client) ListWithdrawals(ctx context.Context, req ListWithdrawalsRequest
 		http.MethodPost,
 		"/Client/GetClientWithdrawalRequestsWithTotals",
 		bytes.NewReader(body),
-		makeRequestOptions{
-			httpClient: c.httpClient,
-			authToken:  c.authToken,
-		},
+		c,
 	)
 	if err != nil {
 		return nil, err

@@ -1,8 +1,7 @@
-package backoffice
+package accounts
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -10,7 +9,7 @@ import (
 )
 
 const (
-	baseURL = "https://backofficewebadmin.betconstruct.com/api/en"
+	baseURL = "https://api.accounts-bc.com/"
 )
 
 var (
@@ -26,18 +25,13 @@ var (
 	ErrUnexpectedStatus    = errors.New("unexpected status")
 )
 
-type response[T any] struct {
-	Data         T      `json:"Data"`
-	HasError     bool   `json:"HasError"`
-	AlertMessage string `json:"AlertMessage"`
-}
-
 func makeRequest[T any](
 	ctx context.Context,
 	method string,
 	path string,
 	body io.Reader,
 	c *client,
+	marshal func(r io.Reader) error,
 ) (*T, error) {
 	fullURL := fmt.Sprintf("%s%s", baseURL, path)
 	req, err := http.NewRequestWithContext(ctx, method, fullURL, body)
@@ -45,8 +39,7 @@ func makeRequest[T any](
 		return nil, err
 	}
 
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authentication", c.authToken)
+	req.Header.Set("Content-Type", "text/html")
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
@@ -79,12 +72,10 @@ func makeRequest[T any](
 		}
 	}
 
-	var data response[T]
-	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+	if marshal != nil {
+		err := marshal(resp.Body)
 		return nil, err
-	} else if data.HasError {
-		return nil, errors.New(data.AlertMessage)
 	}
 
-	return &data.Data, nil
+	return nil, nil
 }
