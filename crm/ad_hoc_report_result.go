@@ -4,9 +4,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 )
+
+var ErrReportResultNotReady = errors.New("report result not ready")
 
 type downloadReportAsExcelRequest struct {
 	ReportResultID int32  `json:"ReportResultId"`
