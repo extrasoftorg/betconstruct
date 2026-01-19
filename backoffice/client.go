@@ -10,30 +10,26 @@ type client struct {
 	refreshOnExpiry bool
 }
 
-func New(opts ...Option) (Client, error) {
+func New(opts ...Option) Client {
 	c := &client{
 		httpClient: &http.Client{},
 	}
 	for _, opt := range opts {
-		if err := opt(c); err != nil {
-			return nil, err
-		}
+		opt(c)
 	}
-	return c, nil
+	return c
 }
 
-type Option func(c *client) error
+type Option func(c *client)
 
 func WithHTTPClient(httpClient *http.Client) Option {
-	return func(c *client) error {
+	return func(c *client) {
 		c.httpClient = httpClient
-		return nil
 	}
 }
 
 func WithAuthToken(authToken string) Option {
-	return func(c *client) error {
+	return func(c *client) {
 		c.authToken = authToken
-		return nil
 	}
 }

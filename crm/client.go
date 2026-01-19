@@ -17,9 +17,7 @@ func New(ctx context.Context, opts ...Option) (Client, error) {
 		httpClient: http.DefaultClient,
 	}
 	for _, opt := range opts {
-		if err := opt(c); err != nil {
-			return nil, err
-		}
+		opt(c)
 	}
 	if c.betconstructToken != "" {
 		if err := c.Login(ctx); err != nil {
@@ -29,25 +27,22 @@ func New(ctx context.Context, opts ...Option) (Client, error) {
 	return c, nil
 }
 
-type Option func(c *client) error
+type Option func(c *client)
 
 func WithAuthToken(authToken string) Option {
-	return func(c *client) error {
+	return func(c *client) {
 		c.authToken = authToken
-		return nil
 	}
 }
 
 func WithBetconstructToken(betconstructToken string) Option {
-	return func(c *client) error {
+	return func(c *client) {
 		c.betconstructToken = betconstructToken
-		return nil
 	}
 }
 
 func WithRefreshOnExpiry() Option {
-	return func(c *client) error {
+	return func(c *client) {
 		c.refreshOnExpiry = true
-		return nil
 	}
 }
