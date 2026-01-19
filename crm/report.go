@@ -7,13 +7,13 @@ import (
 	"net/http"
 )
 
-type ExecuteReportRequest struct {
+type executeReportRequest struct {
 	Type     int   `json:"Type"`
 	ReportID int32 `json:"CustomReportId"`
 }
 
 func (c *client) ExecuteReport(ctx context.Context, reportID int32) error {
-	body, err := json.Marshal(ExecuteReportRequest{
+	body, err := json.Marshal(executeReportRequest{
 		ReportID: reportID,
 	})
 	if err != nil {
