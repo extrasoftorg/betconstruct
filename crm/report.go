@@ -12,8 +12,10 @@ type ExecuteReportRequest struct {
 	ReportID int32 `json:"CustomReportId"`
 }
 
-func (c *client) ExecuteReport(ctx context.Context, req ExecuteReportRequest) error {
-	body, err := json.Marshal(req)
+func (c *client) ExecuteReport(ctx context.Context, reportID int32) error {
+	body, err := json.Marshal(ExecuteReportRequest{
+		ReportID: reportID,
+	})
 	if err != nil {
 		return err
 	}
