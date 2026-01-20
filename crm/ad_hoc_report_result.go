@@ -37,7 +37,14 @@ func (c *client) DownloadReportAsExcel(ctx context.Context, reportResultID int32
 	var bts []byte
 	if _, err := makeRequest[[]byte](ctx, http.MethodPost, "/AdHocReportResult/GetExcel", bytes.NewReader(body), c, func(r io.Reader) error {
 		bts, err = io.ReadAll(r)
-		return err
+		if err != nil {
+			return err
+		}
+		var data response[any]
+		if err := json.Unmarshal(bts, &data); err == nil {
+			return ErrReportResultNotReady
+		}
+		return nil
 	}); err != nil {
 		return nil, err
 	}
