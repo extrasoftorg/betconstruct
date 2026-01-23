@@ -1,35 +1,56 @@
 package backoffice
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
 	"net/http"
+	"time"
 )
 
-type client struct {
-	httpClient      *http.Client
-	authToken       string
-	refreshOnExpiry bool
+type ListWithdrawalsRequest struct {
+	FromDate time.Time `json:"FromDateLocal"`
+	ToDate   time.Time `json:"ToDateLocal"`
+	ID       int64     `json:"Id"`
 }
 
-func New(opts ...Option) Client {
-	c := &client{
-		httpClient: &http.Client{},
+func (r *ListWithdrawalsRequest) MarshalJSON() ([]byte, error) {
+	type wire struct {
+		FromDate *time.Time `json:"FromDateLocal"`
+		ToDate   *time.Time `json:"ToDateLocal"`
+		ID       *int64     `json:"Id"`
 	}
-	for _, opt := range opts {
-		opt(c)
+	w := wire{}
+	if !r.FromDate.IsZero() {
+		w.FromDate = &r.FromDate
 	}
-	return c
+	if !r.ToDate.IsZero() {
+		w.ToDate = &r.ToDate
+	}
+	if r.ID != 0 {
+		w.ID = &r.ID
+	}
+	return json.Marshal(w)
 }
 
-type Option func(c *client)
-
-func WithHTTPClient(httpClient *http.Client) Option {
-	return func(c *client) {
-		c.httpClient = httpClient
-	}
+type listWithdrawalsResponse struct {
+	Withdrawals []Withdrawal `json:"ClientRequests"`
 }
 
-func WithAuthToken(authToken string) Option {
-	return func(c *client) {
-		c.authToken = authToken
+func (c *client) ListWithdrawals(ctx context.Context, req ListWithdrawalsRequest) ([]Withdrawal, error) {
+	body, err := req.MarshalJSON()
+	if err != nil {
+		return nil, err
 	}
+	withdrawals, err := makeRequest[listWithdrawalsResponse](
+		ctx,
+		http.MethodPost,
+		"/Client/GetClientWithdrawalRequestsWithTotals",
+		bytes.NewReader(body),
+		c,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return withdrawals.Withdrawals, nil
 }

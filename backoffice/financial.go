@@ -82,39 +82,3 @@ func (c *client) ListDeposits(ctx context.Context, req ListDepositsRequest) ([]D
 	}
 	return deposits.Documents.Deposits, nil
 }
-
-type ListWithdrawalsRequestDate struct {
-	time.Time
-}
-
-func (d ListWithdrawalsRequestDate) MarshalJSON() ([]byte, error) {
-	layout := "02-01-06 - 15:04:05"
-	return json.Marshal(time.Time(d.Time).Format(layout))
-}
-
-type ListWithdrawalsRequest struct {
-	FromDate *ListWithdrawalsRequestDate `json:"FromDateLocal"`
-	ToDate   *ListWithdrawalsRequestDate `json:"ToDateLocal"`
-}
-
-type listWithdrawalsResponse struct {
-	Withdrawals []Withdrawal `json:"ClientRequests"`
-}
-
-func (c *client) ListWithdrawals(ctx context.Context, req ListWithdrawalsRequest) ([]Withdrawal, error) {
-	body, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-	withdrawals, err := makeRequest[listWithdrawalsResponse](
-		ctx,
-		http.MethodPost,
-		"/Client/GetClientWithdrawalRequestsWithTotals",
-		bytes.NewReader(body),
-		c,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return withdrawals.Withdrawals, nil
-}
