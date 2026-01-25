@@ -368,8 +368,8 @@ func (g *PaymentMethodGroupIDs) UnmarshalJSON(b []byte) error {
 
 	if slice, ok := v.([]any); ok {
 		for _, v := range slice {
-			if id, ok := v.(int8); ok {
-				*g = append(*g, id)
+			if id, ok := v.(float64); ok {
+				*g = append(*g, int8(id))
 			}
 		}
 		return nil
