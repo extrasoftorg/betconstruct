@@ -46,7 +46,19 @@ func makeRequest[T any](
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authentication", c.authToken)
+	var authToken string
+	if c.pool != nil {
+		at := c.pool.GetAuthToken(ctx)
+		fmt.Println(at)
+		if at != nil {
+			authToken = at.String()
+		} else {
+			return nil, ErrUnauthorized
+		}
+	} else {
+		authToken = c.authToken
+	}
+	req.Header.Set("Authentication", authToken)
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
@@ -59,8 +71,18 @@ func makeRequest[T any](
 		case http.StatusBadRequest:
 			return nil, ErrBadRequest
 		case http.StatusUnauthorized:
+			if c.pool != nil {
+				if err := c.pool.SetRateLimited(ctx, authToken); err != nil {
+					return nil, err
+				}
+			}
 			return nil, ErrUnauthorized
 		case http.StatusForbidden:
+			if c.pool != nil {
+				if err := c.pool.SetRateLimited(ctx, authToken); err != nil {
+					return nil, err
+				}
+			}
 			return nil, ErrForbidden
 		case http.StatusNotFound:
 			return nil, ErrNotFound
