@@ -65,18 +65,20 @@ func (d ListPlayerTransactionsRequestDate) MarshalJSON() ([]byte, error) {
 }
 
 type ListPlayerTransactionsRequest struct {
-	PlayerID PlayerID                          `json:"ClientId"`
-	FromDate ListPlayerTransactionsRequestDate `json:"StartTimeLocal"`
-	ToDate   ListPlayerTransactionsRequestDate `json:"EndTimeLocal"`
-	Currency string                            `json:"CurrencyId"`
+	PlayerID        PlayerID                          `json:"ClientId"`
+	FromDate        ListPlayerTransactionsRequestDate `json:"StartTimeLocal"`
+	ToDate          ListPlayerTransactionsRequestDate `json:"EndTimeLocal"`
+	Currency        string                            `json:"CurrencyId"`
+	DocumentTypeIDs []int                             `json:"DocumentTypeIds"`
 }
 
 func (r *ListPlayerTransactionsRequest) MarshalJSON() ([]byte, error) {
 	type wire struct {
-		FromDate *ListPlayerTransactionsRequestDate `json:"StartTimeLocal"`
-		ToDate   *ListPlayerTransactionsRequestDate `json:"EndTimeLocal"`
-		Currency *string                            `json:"CurrencyId"`
-		PlayerID *PlayerID                          `json:"ClientId"`
+		FromDate        *ListPlayerTransactionsRequestDate `json:"StartTimeLocal"`
+		ToDate          *ListPlayerTransactionsRequestDate `json:"EndTimeLocal"`
+		Currency        *string                            `json:"CurrencyId"`
+		PlayerID        *PlayerID                          `json:"ClientId"`
+		DocumentTypeIDs []int                              `json:"DocumentTypeIds"`
 	}
 	w := wire{}
 	if !r.FromDate.IsZero() {
@@ -90,6 +92,9 @@ func (r *ListPlayerTransactionsRequest) MarshalJSON() ([]byte, error) {
 	}
 	if r.PlayerID != 0 {
 		w.PlayerID = &r.PlayerID
+	}
+	if len(r.DocumentTypeIDs) > 0 {
+		w.DocumentTypeIDs = r.DocumentTypeIDs
 	}
 	return json.Marshal(w)
 }
