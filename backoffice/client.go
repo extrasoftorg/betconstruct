@@ -54,3 +54,64 @@ func (c *client) ListWithdrawals(ctx context.Context, req ListWithdrawalsRequest
 	}
 	return withdrawals.Withdrawals, nil
 }
+
+type ListPlayerTransactionsRequestDate struct {
+	time.Time
+}
+
+func (d ListPlayerTransactionsRequestDate) MarshalJSON() ([]byte, error) {
+	layout := "02-01-06"
+	return json.Marshal(time.Time(d.Time).Format(layout))
+}
+
+type ListPlayerTransactionsRequest struct {
+	PlayerID PlayerID                          `json:"ClientId"`
+	FromDate ListPlayerTransactionsRequestDate `json:"StartTimeLocal"`
+	ToDate   ListPlayerTransactionsRequestDate `json:"EndTimeLocal"`
+	Currency string                            `json:"CurrencyId"`
+}
+
+func (r *ListPlayerTransactionsRequest) MarshalJSON() ([]byte, error) {
+	type wire struct {
+		FromDate *ListPlayerTransactionsRequestDate `json:"StartTimeLocal"`
+		ToDate   *ListPlayerTransactionsRequestDate `json:"EndTimeLocal"`
+		Currency *string                            `json:"CurrencyId"`
+		PlayerID *PlayerID                          `json:"ClientId"`
+	}
+	w := wire{}
+	if !r.FromDate.IsZero() {
+		w.FromDate = &r.FromDate
+	}
+	if !r.ToDate.IsZero() {
+		w.ToDate = &r.ToDate
+	}
+	if r.Currency != "" {
+		w.Currency = &r.Currency
+	}
+	if r.PlayerID != 0 {
+		w.PlayerID = &r.PlayerID
+	}
+	return json.Marshal(w)
+}
+
+type listPlayerTransactionsResponse struct {
+	Transactions []Transaction `json:"Objects"`
+}
+
+func (c *client) ListPlayerTransactions(ctx context.Context, req ListPlayerTransactionsRequest) ([]Transaction, error) {
+	body, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+	transactions, err := makeRequest[listPlayerTransactionsResponse](
+		ctx,
+		http.MethodPost,
+		"/Client/GetClientTransactionsV1",
+		bytes.NewReader(body),
+		c,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return transactions.Transactions, nil
+}
