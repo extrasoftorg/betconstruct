@@ -10,6 +10,7 @@ type Client interface {
 	ListRegisteredPlayers(ctx context.Context, req ListRegisteredPlayersRequest) ([]RegisteredPlayer, error)
 	ListPlayers(ctx context.Context, req ListPlayersRequest) ([]ListPlayersPlayer, error)
 	AddPaymentToPlayer(ctx context.Context, req AddPaymentToPlayerRequest) error
+	AddBonusToPlayer(ctx context.Context, req AddBonusToPlayerRequest) error
 	ListPlayerTransactions(ctx context.Context, req ListPlayerTransactionsRequest) ([]Transaction, error)
 
 	ListSportBets(ctx context.Context, req ListSportBetsRequest) ([]SportBet, error)
