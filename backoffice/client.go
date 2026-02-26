@@ -120,3 +120,32 @@ func (c *client) ListPlayerTransactions(ctx context.Context, req ListPlayerTrans
 	}
 	return transactions.Transactions, nil
 }
+
+type ListPlayerCasinoGamesRequest struct {
+	PlayerID PlayerID                          `json:"ClientId"`
+	FromDate ListPlayerTransactionsRequestDate `json:"FromDateLocal"`
+	ToDate   ListPlayerTransactionsRequestDate `json:"ToDateLocal"`
+	Currency string                            `json:"Currency"`
+}
+
+type listPlayerCasinoGamesResponse struct {
+	Games []PlayerCasinoGame `json:"Data"`
+}
+
+func (c *client) ListPlayerCasinoGames(ctx context.Context, req ListPlayerCasinoGamesRequest) ([]PlayerCasinoGame, error) {
+	body, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := makeRequest[listPlayerCasinoGamesResponse](
+		ctx,
+		http.MethodPost,
+		"/Client/GetClientCasinoGames",
+		bytes.NewReader(body),
+		c,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return resp.Games, nil
+}

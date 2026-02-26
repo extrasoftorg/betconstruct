@@ -462,3 +462,15 @@ type PartnerDomain struct {
 	PartnerID PartnerID           `json:"PartnerId"`
 	Status    PartnerDomainStatus `json:"State"`
 }
+
+type PlayerCasinoGame struct {
+	Game            string  `json:"Game"`
+	Bets            int64   `json:"Bets"`
+	Stakes          float64 `json:"Stakes"`
+	Winnings        float64 `json:"Winnings"`
+	Profit          float64 `json:"Profit"`
+	Profitness      float64 `json:"Profitness"`
+	ProviderName    string  `json:"ProviderName"`
+	BonusBetAmount  float64 `json:"BonusBetAmount"`
+	BonusWinAmount  float64 `json:"BonusWinAmount"`
+}

@@ -12,6 +12,7 @@ type Client interface {
 	AddPaymentToPlayer(ctx context.Context, req AddPaymentToPlayerRequest) error
 	AddBonusToPlayer(ctx context.Context, req AddBonusToPlayerRequest) error
 	ListPlayerTransactions(ctx context.Context, req ListPlayerTransactionsRequest) ([]Transaction, error)
+	ListPlayerCasinoGames(ctx context.Context, req ListPlayerCasinoGamesRequest) ([]PlayerCasinoGame, error)
 
 	ListSportBets(ctx context.Context, req ListSportBetsRequest) ([]SportBet, error)
 
