@@ -128,16 +128,12 @@ type ListPlayerCasinoGamesRequest struct {
 	Currency string                            `json:"Currency"`
 }
 
-type listPlayerCasinoGamesResponse struct {
-	Games []PlayerCasinoGame `json:"Data"`
-}
-
 func (c *client) ListPlayerCasinoGames(ctx context.Context, req ListPlayerCasinoGamesRequest) ([]PlayerCasinoGame, error) {
 	body, err := json.Marshal(req)
 	if err != nil {
 		return nil, err
 	}
-	resp, err := makeRequest[listPlayerCasinoGamesResponse](
+	resp, err := makeRequest[[]PlayerCasinoGame](
 		ctx,
 		http.MethodPost,
 		"/Client/GetClientCasinoGames",
@@ -147,5 +143,5 @@ func (c *client) ListPlayerCasinoGames(ctx context.Context, req ListPlayerCasino
 	if err != nil {
 		return nil, err
 	}
-	return resp.Games, nil
+	return *resp, nil
 }
