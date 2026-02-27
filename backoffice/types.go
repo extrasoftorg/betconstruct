@@ -22,12 +22,13 @@ func (t *DateTime) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-	parsed, err := time.Parse("2006-01-02T15:04:05", s)
-	if err != nil {
-		return err
+	for _, layout := range []string{"2006-01-02T15:04:05.999", "2006-01-02T15:04:05"} {
+		if parsed, err := time.Parse(layout, s); err == nil {
+			*t = DateTime(parsed)
+			return nil
+		}
 	}
-	*t = DateTime(parsed)
-	return nil
+	return fmt.Errorf("cannot parse %q as DateTime", s)
 }
 
 type TransactionType string
@@ -179,7 +180,10 @@ func (s SportBetStatus) String() string {
 }
 
 var sportBetStatusIDMap = map[SportBetStatus]int{
-	SportBetStatusPending: 1,
+	SportBetStatusPending:  1,
+	SportBetStatusLost:     3,
+	SportBetStatusWon:      4,
+	SportBetStatusCashout:  5,
 }
 
 func (s SportBetStatus) MarshalJSON() ([]byte, error) {
@@ -198,6 +202,12 @@ func (s *SportBetStatus) UnmarshalJSON(b []byte) error {
 	switch id {
 	case 1:
 		*s = SportBetStatusPending
+	case 3:
+		*s = SportBetStatusLost
+	case 4:
+		*s = SportBetStatusWon
+	case 5:
+		*s = SportBetStatusCashout
 	default:
 		*s = SportBetStatusUnknown
 	}
@@ -206,11 +216,25 @@ func (s *SportBetStatus) UnmarshalJSON(b []byte) error {
 
 const (
 	SportBetStatusPending SportBetStatus = "pending"
+	SportBetStatusLost    SportBetStatus = "lost"
+	SportBetStatusWon     SportBetStatus = "won"
+	SportBetStatusCashout SportBetStatus = "cashout"
 	SportBetStatusUnknown SportBetStatus = "unknown"
 )
 
 type SportBet struct {
-	Status SportBetStatus `json:"State"`
+	ID        int64          `json:"Id"`
+	TypeName  string         `json:"TypeName"`
+	Amount    float64        `json:"Amount"`
+	Price     float64        `json:"Price"`
+	CreatedAt DateTime       `json:"CreatedLocal"`
+	CalcDate  *DateTime      `json:"CalcDateLocal"`
+	Status    SportBetStatus `json:"State"`
+}
+
+type SportBetTotals struct {
+	EquivalentAmountSum  float64 `json:"EquivalentAmountSum"`
+	EquivalentWinningSum float64 `json:"EquivalentWinningSum"`
 }
 
 type NumericBool bool

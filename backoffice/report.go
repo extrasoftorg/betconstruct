@@ -31,6 +31,39 @@ type listSportBetsResponse struct {
 	} `json:"BetData"`
 }
 
+type GetBetHistoryResult struct {
+	Bets   []SportBet
+	Totals SportBetTotals
+}
+
+type getBetHistoryResponse struct {
+	BetData struct {
+		Bets []SportBet `json:"Objects"`
+	} `json:"BetData"`
+	BetTotals SportBetTotals `json:"BetTotals"`
+}
+
+func (c *client) GetBetHistory(ctx context.Context, req ListSportBetsRequest) (*GetBetHistoryResult, error) {
+	body, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := makeRequest[getBetHistoryResponse](
+		ctx,
+		http.MethodPost,
+		"/Report/GetBetHistory",
+		bytes.NewReader(body),
+		c,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &GetBetHistoryResult{
+		Bets:   resp.BetData.Bets,
+		Totals: resp.BetTotals,
+	}, nil
+}
+
 func (c *client) ListSportBets(ctx context.Context, req ListSportBetsRequest) ([]SportBet, error) {
 	body, err := json.Marshal(req)
 	if err != nil {
