@@ -17,6 +17,10 @@ func (p PlayerID) Int64() int64 {
 
 type DateTime time.Time
 
+func (t DateTime) MarshalJSON() ([]byte, error) {
+	return json.Marshal(time.Time(t).Format(time.RFC3339))
+}
+
 func (t *DateTime) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
