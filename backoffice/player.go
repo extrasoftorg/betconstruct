@@ -80,6 +80,20 @@ func (c *client) ListPlayers(ctx context.Context, req ListPlayersRequest) ([]Lis
 	return players.Players, nil
 }
 
+func (c *client) GetClientKPI(ctx context.Context, playerID PlayerID) (*PlayerKPI, error) {
+	kpi, err := makeRequest[PlayerKPI](
+		ctx,
+		http.MethodGet,
+		fmt.Sprintf("/Client/GetClientKpi?id=%d", playerID),
+		nil,
+		c,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return kpi, nil
+}
+
 type AddPaymentToPlayerRequestAmount struct {
 	Value float64
 }

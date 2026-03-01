@@ -9,6 +9,7 @@ type Client interface {
 
 	ListRegisteredPlayers(ctx context.Context, req ListRegisteredPlayersRequest) ([]RegisteredPlayer, error)
 	ListPlayers(ctx context.Context, req ListPlayersRequest) ([]ListPlayersPlayer, error)
+	GetClientKPI(ctx context.Context, playerID PlayerID) (*PlayerKPI, error)
 	AddPaymentToPlayer(ctx context.Context, req AddPaymentToPlayerRequest) error
 	AddBonusToPlayer(ctx context.Context, req AddBonusToPlayerRequest) error
 	ListPlayerTransactions(ctx context.Context, req ListPlayerTransactionsRequest) ([]Transaction, error)

@@ -491,6 +491,22 @@ type PartnerDomain struct {
 	Status    PartnerDomainStatus `json:"State"`
 }
 
+type PlayerKPI struct {
+	ID                      int64     `json:"Id"`
+	ClientID                PlayerID  `json:"ClientId"`
+	DepositAmount           float64   `json:"DepositAmount"`
+	DepositCount            int       `json:"DepositCount"`
+	WithdrawalAmount        float64   `json:"WithdrawalAmount"`
+	WithdrawalCount         int       `json:"WithdrawalCount"`
+	LastDepositAmount       float64   `json:"LastDepositAmount"`
+	LastWithdrawalAmount    float64   `json:"LastWithdrawalAmount"`
+	FirstDepositTimeLocal   *DateTime `json:"FirstDepositTimeLocal"`
+	LastDepositTimeLocal    *DateTime `json:"LastDepositTimeLocal"`
+	LastWithdrawalTimeLocal *DateTime `json:"LastWithdrawalTimeLocal"`
+	LastSportBetTimeLocal   *DateTime `json:"LastSportBetTimeLocal"`
+	LastCasinoBetTimeLocal  *DateTime `json:"LastCasinoBetTimeLocal"`
+}
+
 type PlayerCasinoGame struct {
 	Game            string  `json:"Game"`
 	Bets            int64   `json:"Bets"`
