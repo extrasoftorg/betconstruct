@@ -94,6 +94,34 @@ func (c *client) GetClientKPI(ctx context.Context, playerID PlayerID) (*PlayerKP
 	return kpi, nil
 }
 
+type SaveClientRestrictionRequest struct {
+	PlayerID          PlayerID `json:"ClientId"`
+	CanLogin          bool     `json:"CanLogin"`
+	CanBet            bool     `json:"CanBet"`
+	CanDeposit        bool     `json:"CanDeposit"`
+	CanWithdraw       bool     `json:"CanWithdraw"`
+	CanIncreaseLimit  bool     `json:"CanIncreaseLimit"`
+	CanClaimBonus     bool     `json:"CanClaimBonus"`
+	CanCasinoLogin    bool     `json:"CanCasinoLogin"`
+	CanUploadDocument bool     `json:"CanUploadDocument"`
+	UserName          string   `json:"UserName,omitempty"`
+}
+
+func (c *client) SaveClientRestriction(ctx context.Context, req SaveClientRestrictionRequest) error {
+	body, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+	_, err = makeRequest[any](
+		ctx,
+		http.MethodPost,
+		"/Client/SaveClientRestriction",
+		bytes.NewReader(body),
+		c,
+	)
+	return err
+}
+
 type AddPaymentToPlayerRequestAmount struct {
 	Value float64
 }
