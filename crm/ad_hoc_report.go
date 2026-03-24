@@ -44,10 +44,10 @@ type AdHocReportFilter struct {
 }
 
 type AdHocReportQueryConfiguration struct {
-	Columns         []AdHocReportColumnRef  `json:"Columns"`
-	Filters         [][]AdHocReportFilter   `json:"Filters"`
-	Table           AdHocReportTableRef     `json:"Table"`
-	UnifiedCurrency *string                 `json:"UnifiedCurrency"`
+	Columns         []AdHocReportColumnRef `json:"Columns"`
+	Filters         [][]AdHocReportFilter  `json:"Filters"`
+	Table           AdHocReportTableRef    `json:"Table"`
+	UnifiedCurrency *string                `json:"UnifiedCurrency"`
 }
 
 type CreateAdHocReportRequest struct {
@@ -55,7 +55,6 @@ type CreateAdHocReportRequest struct {
 	Description        string                        `json:"Description"`
 	QueryConfiguration AdHocReportQueryConfiguration `json:"QueryConfiguration"`
 	DefinitionType     int                           `json:"DefinitionType"`
-	AdHocReportId      int32                         `json:"AdHocReportId"`
 }
 
 type AdHocReport struct {
