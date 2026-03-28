@@ -46,12 +46,12 @@ type listReportsResponse struct {
 	Data []Report `json:"Data"`
 }
 
-func (c *client) ListReports(ctx context.Context) ([]Report, error) {
+func (c *client) ListReports(ctx context.Context, pageSize, pageNumber int) ([]Report, error) {
 	body, err := json.Marshal(listReportsRequest{
 		Filters: []map[string]any{
 			{"Name": "State", "Comparision": 0, "Values": []string{}},
 		},
-		Pageing:     map[string]any{"PageSize": 20, "PageNumber": 1},
+		Pageing:     map[string]any{"PageSize": pageSize, "PageNumber": pageNumber},
 		Sorting:     map[string]any{"Name": "ArchivedDate", "Direction": "asc"},
 		SortingThen: map[string]any{"Name": "CreatedDate", "Direction": "desc"},
 	})

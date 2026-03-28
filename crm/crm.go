@@ -7,7 +7,7 @@ type Client interface {
 
 	CreateAdHocReport(ctx context.Context, req CreateAdHocReportRequest) (*AdHocReport, error)
 
-	ListReports(ctx context.Context) ([]Report, error)
+	ListReports(ctx context.Context, pageSize, pageNumber int) ([]Report, error)
 
 	ExecuteReport(ctx context.Context, reportID int32) error
 
