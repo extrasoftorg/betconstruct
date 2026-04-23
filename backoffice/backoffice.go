@@ -15,6 +15,7 @@ type Client interface {
 	AddBonusToPlayer(ctx context.Context, req AddBonusToPlayerRequest) error
 	ListPlayerTransactions(ctx context.Context, req ListPlayerTransactionsRequest) ([]Transaction, error)
 	ListPlayerCasinoGames(ctx context.Context, req ListPlayerCasinoGamesRequest) ([]PlayerCasinoGame, error)
+	CheckIPConflict(ctx context.Context, username string, days int) (*IPConflictResult, error)
 
 	GetSportKindReport(ctx context.Context, req GetSportKindReportRequest) ([]SportKindReport, error)
 	ListSportBets(ctx context.Context, req ListSportBetsRequest) ([]SportBet, error)
