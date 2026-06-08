@@ -94,6 +94,34 @@ func (c *client) GetClientKPI(ctx context.Context, playerID PlayerID) (*PlayerKP
 	return kpi, nil
 }
 
+type GetClientRestrictionResult struct {
+	PlayerID                PlayerID  `json:"ClientId"`
+	CanLogin                bool      `json:"CanLogin"`
+	CanBet                  bool      `json:"CanBet"`
+	CanDeposit              bool      `json:"CanDeposit"`
+	CanWithdraw             bool      `json:"CanWithdraw"`
+	CanIncreaseLimit        bool      `json:"CanIncreaseLimit"`
+	CanClaimBonus           bool      `json:"CanClaimBonus"`
+	CanCasinoLogin          bool      `json:"CanCasinoLogin"`
+	CanUploadDocument       bool      `json:"CanUploadDocument"`
+	IsWithdrawalAutoConfirm bool      `json:"IsWithdrawalAutoConfirm"`
+	UpdatedAt               *DateTime `json:"ModifedLocal"`
+}
+
+func (c *client) GetClientRestriction(ctx context.Context, playerID PlayerID) (*GetClientRestrictionResult, error) {
+	restriction, err := makeRequest[GetClientRestrictionResult](
+		ctx,
+		http.MethodGet,
+		fmt.Sprintf("/Client/GetClientRestriction?clientId=%d", playerID),
+		nil,
+		c,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return restriction, nil
+}
+
 type SaveClientRestrictionRequest struct {
 	PlayerID          PlayerID `json:"ClientId"`
 	CanLogin          bool     `json:"CanLogin"`
