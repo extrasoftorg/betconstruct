@@ -13,28 +13,10 @@ const (
 	baseURL = "https://crm-t.betconstruct.com/api/en"
 )
 
-var (
-	ErrBadRequest          = errors.New("bad request")
-	ErrUnauthorized        = errors.New("unauthorized")
-	ErrForbidden           = errors.New("forbidden")
-	ErrNotFound            = errors.New("not found")
-	ErrMethodNotAllowed    = errors.New("method not allowed")
-	ErrTooManyRequests     = errors.New("too many requests")
-	ErrInternalServerError = errors.New("internal server error")
-	ErrBadGateway          = errors.New("bad gateway")
-	ErrServiceUnavailable  = errors.New("service unavailable")
-	ErrUnexpectedStatus    = errors.New("unexpected status")
-)
-
 type response[T any] struct {
 	Data         T      `json:"Data"`
 	HasError     bool   `json:"HasError"`
 	AlertMessage string `json:"AlertMessage"`
-}
-
-type makeRequestOptions struct {
-	httpClient *http.Client
-	authToken  string
 }
 
 func makeRequest[T any](

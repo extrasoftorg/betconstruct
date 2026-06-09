@@ -2,6 +2,7 @@ package crm
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 )
 
@@ -21,9 +22,14 @@ func New(ctx context.Context, opts ...Option) (Client, error) {
 	}
 	if c.betconstructToken != "" {
 		if err := c.Login(ctx); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to login: %w", err)
 		}
 	}
+
+	if c.authToken == "" {
+		return nil, fmt.Errorf("auth token is not set: %w", ErrUnauthorized)
+	}
+
 	return c, nil
 }
 

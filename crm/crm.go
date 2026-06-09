@@ -4,6 +4,7 @@ import "context"
 
 type Client interface {
 	Login(ctx context.Context) error
+	AuthToken() string
 
 	CreateAdHocReport(ctx context.Context, req CreateAdHocReportRequest) (*AdHocReport, error)
 
