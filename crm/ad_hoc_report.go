@@ -15,26 +15,26 @@ type AdHocReportTableRef struct {
 	Id int32 `json:"Id"`
 }
 
-type adHocFilterValueData struct {
-	HasTime   bool   `json:"HasTime"`
-	Value     string `json:"Value"`
-	ValueType int    `json:"ValueType"`
+type AdHocReportFilterValueData struct {
+	Value              any     `json:"Value"` // string (e.g. "2026-06-08T00:00:00.000Z") or bool
+	HasTime            bool    `json:"HasTime"`
+	TimeZone           *string `json:"TimeZone"`
+	ValueType          int     `json:"ValueType"`
+	CascadeFiltersList any     `json:"CascadeFiltersList"` // null in practice
 }
 
-type adHocFilterValueArgument struct {
-	Value     *string `json:"Value"`
-	ValueType int     `json:"ValueType"`
-}
-
-type adHocFilterValueBound struct {
-	Operation int                      `json:"Operation"`
-	Data      adHocFilterValueData     `json:"Data"`
-	Argument  adHocFilterValueArgument `json:"Argument"`
+type AdHocReportFilterValueArgument struct {
+	Value              *string `json:"Value"`
+	HasTime            bool    `json:"HasTime"`
+	TimeZone           *string `json:"TimeZone"`
+	ValueType          int     `json:"ValueType"`
+	CascadeFiltersList any     `json:"CascadeFiltersList"`
 }
 
 type AdHocReportFilterValue struct {
-	From adHocFilterValueBound `json:"From"`
-	To   adHocFilterValueBound `json:"To"`
+	Data      AdHocReportFilterValueData     `json:"Data"`
+	Operation int                            `json:"Operation"`
+	Argument  AdHocReportFilterValueArgument `json:"Argument"`
 }
 
 type AdHocReportFilter struct {
@@ -62,17 +62,28 @@ type AdHocReport struct {
 	Name string `json:"Name"`
 }
 
-func NewAdHocFilterValueBound(hasTime bool, value string, valueType int) adHocFilterValueBound {
-	return adHocFilterValueBound{
-		Operation: 0,
-		Data: adHocFilterValueData{
-			HasTime:   hasTime,
-			Value:     value,
-			ValueType: valueType,
-		},
-		Argument: adHocFilterValueArgument{
-			Value:     nil,
-			ValueType: 0,
+// NewAdHocReportFilter builds one filter (one bound). For a date range, the
+// caller emits two: Comparision 0 for the lower bound, Comparision 7 for the upper.
+func NewAdHocReportFilter(columnID int32, comparision int, value any, hasTime bool, valueType int) AdHocReportFilter {
+	return AdHocReportFilter{
+		Column:      AdHocReportColumnRef{Id: columnID},
+		Comparision: comparision,
+		Value: AdHocReportFilterValue{
+			Data: AdHocReportFilterValueData{
+				Value:              value,
+				HasTime:            hasTime,
+				TimeZone:           nil,
+				ValueType:          valueType,
+				CascadeFiltersList: nil,
+			},
+			Operation: 0,
+			Argument: AdHocReportFilterValueArgument{
+				Value:              nil,
+				HasTime:            false,
+				TimeZone:           nil,
+				ValueType:          0,
+				CascadeFiltersList: nil,
+			},
 		},
 	}
 }
