@@ -161,38 +161,40 @@ func (c *client) SaveClientRestriction(ctx context.Context, req SaveClientRestri
 	return err
 }
 
-type AddPaymentToPlayerRequestAmount struct {
-	Value float64
-}
-
-func (a AddPaymentToPlayerRequestAmount) MarshalJSON() ([]byte, error) {
-	str := fmt.Sprintf("%.2f", a.Value)
-	return json.Marshal(str)
-}
-
 type AddPaymentToPlayerRequestType string
-
-func (t AddPaymentToPlayerRequestType) MarshalJSON() ([]byte, error) {
-	var v int
-	switch t {
-	case AddPaymentToPlayerRequestTypeCorrectionUp:
-		v = 3
-	default:
-		return nil, fmt.Errorf("unknown type: %s", t)
-	}
-	return json.Marshal(v)
-}
 
 const (
 	AddPaymentToPlayerRequestTypeCorrectionUp AddPaymentToPlayerRequestType = "correctionUp"
 )
 
 type AddPaymentToPlayerRequest struct {
-	PlayerID PlayerID                        `json:"ClientId"`
-	Amount   AddPaymentToPlayerRequestAmount `json:"Amount"`
-	Note     string                          `json:"Info"`
-	Type     AddPaymentToPlayerRequestType   `json:"DocTypeInt"`
-	Currency string                          `json:"CurrencyId"`
+	PlayerID PlayerID
+	Amount   float64
+	Note     string
+	Type     AddPaymentToPlayerRequestType
+	Currency string
+}
+
+func (a AddPaymentToPlayerRequest) MarshalJSON() ([]byte, error) {
+	w := struct {
+		PlayerID PlayerID `json:"ClientId"`
+		Amount   string   `json:"Amount"`
+		Note     string   `json:"Info"`
+		Type     int      `json:"DocTypeInt"`
+		Currency string   `json:"CurrencyId"`
+	}{
+		PlayerID: a.PlayerID,
+		Note:     a.Note,
+		Currency: a.Currency,
+		Amount:   fmt.Sprintf("%.2f", a.Amount),
+	}
+	switch a.Type {
+	case AddPaymentToPlayerRequestTypeCorrectionUp:
+		w.Type = 3
+	default:
+		return nil, fmt.Errorf("unknown type: %s", a.Type)
+	}
+	return json.Marshal(w)
 }
 
 func (c *client) AddPaymentToPlayer(ctx context.Context, req AddPaymentToPlayerRequest) error {
