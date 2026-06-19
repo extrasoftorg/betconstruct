@@ -9,12 +9,6 @@ import (
 	"time"
 )
 
-type PlayerID int64
-
-func (p PlayerID) Int64() int64 {
-	return int64(p)
-}
-
 type DateTime time.Time
 
 func (t DateTime) MarshalJSON() ([]byte, error) {
@@ -141,42 +135,6 @@ type RegisteredPlayer struct {
 	FullName  string   `json:"Name"`
 }
 
-type ListPlayersPlayer struct {
-	ID                  PlayerID           `json:"Id"`
-	CreatedAt           DateTime           `json:"CreatedLocalDate"`
-	Username            string             `json:"Login"`
-	FirstName           string             `json:"FirstName"`
-	MiddleName          string             `json:"MiddleName"`
-	LastName            string             `json:"LastName"`
-	Balance             float64            `json:"Balance"`
-	PlayerCategory *PlayerCategory `json:"SportsbookProfileId"`
-}
-
-type PlayerCategory string
-
-func (p PlayerCategory) String() string {
-	return string(p)
-}
-
-func (p *PlayerCategory) UnmarshalJSON(b []byte) error {
-	var id int
-	if err := json.Unmarshal(b, &id); err != nil {
-		return err
-	}
-	switch id {
-	case 10:
-		*p = PlayerCategoryTestUser
-	default:
-		*p = PlayerCategoryUnknown
-	}
-	return nil
-}
-
-const (
-	PlayerCategoryTestUser PlayerCategory = "testuser"
-	PlayerCategoryUnknown  PlayerCategory = "unknown"
-)
-
 type SportBetStatus string
 
 func (s SportBetStatus) String() string {
@@ -184,10 +142,10 @@ func (s SportBetStatus) String() string {
 }
 
 var sportBetStatusIDMap = map[SportBetStatus]int{
-	SportBetStatusPending:  1,
-	SportBetStatusLost:     3,
-	SportBetStatusWon:      4,
-	SportBetStatusCashout:  5,
+	SportBetStatusPending: 1,
+	SportBetStatusLost:    3,
+	SportBetStatusWon:     4,
+	SportBetStatusCashout: 5,
 }
 
 func (s SportBetStatus) MarshalJSON() ([]byte, error) {
@@ -508,13 +466,13 @@ type PlayerKPI struct {
 }
 
 type PlayerCasinoGame struct {
-	Game            string  `json:"Game"`
-	Bets            int64   `json:"Bets"`
-	Stakes          float64 `json:"Stakes"`
-	Winnings        float64 `json:"Winnings"`
-	Profit          float64 `json:"Profit"`
-	Profitness      float64 `json:"Profitness"`
-	ProviderName    string  `json:"ProviderName"`
-	BonusBetAmount  float64 `json:"BonusBetAmount"`
-	BonusWinAmount  float64 `json:"BonusWinAmount"`
+	Game           string  `json:"Game"`
+	Bets           int64   `json:"Bets"`
+	Stakes         float64 `json:"Stakes"`
+	Winnings       float64 `json:"Winnings"`
+	Profit         float64 `json:"Profit"`
+	Profitness     float64 `json:"Profitness"`
+	ProviderName   string  `json:"ProviderName"`
+	BonusBetAmount float64 `json:"BonusBetAmount"`
+	BonusWinAmount float64 `json:"BonusWinAmount"`
 }

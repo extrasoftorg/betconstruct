@@ -42,32 +42,43 @@ func (c *client) ListRegisteredPlayers(ctx context.Context, req ListRegisteredPl
 	return *players, nil
 }
 
-type ListPlayersRequestDate struct {
-	time.Time
-}
-
-func (d ListPlayersRequestDate) MarshalJSON() ([]byte, error) {
-	layout := "02-01-06 - 15:04:05"
-	return json.Marshal(time.Time(d.Time).Format(layout))
-}
-
 type ListPlayersRequest struct {
-	FromDate *ListPlayersRequestDate `json:"MinCreatedLocal"`
-	ToDate   *ListPlayersRequestDate `json:"MaxCreatedLocal"`
-	MaxRows  int                     `json:"MaxRows"`
-	Username string                  `json:"Login"`
+	FromRegistrationDate time.Time
+	ToRegistrationDate   time.Time
+	MaxRows              int
+	Username             string
 }
 
-type listPlayersResponse struct {
-	Players []ListPlayersPlayer `json:"Objects"`
+func (r ListPlayersRequest) MarshalJSON() ([]byte, error) {
+	type wire struct {
+		FromRegistrationDate *string `json:"MinCreatedLocal"`
+		ToRegistrationDate   *string `json:"MaxCreatedLocal"`
+		MaxRows              int     `json:"MaxRows"`
+		Username             string  `json:"Login"`
+	}
+	w := wire{
+		MaxRows:  r.MaxRows,
+		Username: r.Username,
+	}
+	if !r.FromRegistrationDate.IsZero() {
+		date := r.FromRegistrationDate.Format("02-01-06 - 15:04:05")
+		w.FromRegistrationDate = &date
+	}
+	if !r.ToRegistrationDate.IsZero() {
+		date := r.ToRegistrationDate.Format("02-01-06 - 15:04:05")
+		w.ToRegistrationDate = &date
+	}
+	return json.Marshal(w)
 }
 
-func (c *client) ListPlayers(ctx context.Context, req ListPlayersRequest) ([]ListPlayersPlayer, error) {
-	body, err := json.Marshal(req)
+func (c *client) ListPlayers(ctx context.Context, req ListPlayersRequest) ([]*ListPlayersPlayer, error) {
+	body, err := req.MarshalJSON()
 	if err != nil {
 		return nil, err
 	}
-	players, err := makeRequest[listPlayersResponse](
+	players, err := makeRequest[struct {
+		Players []*ListPlayersPlayer `json:"Objects"`
+	}](
 		ctx,
 		http.MethodPost,
 		"/Client/GetClients",
@@ -202,27 +213,12 @@ func (c *client) AddPaymentToPlayer(ctx context.Context, req AddPaymentToPlayerR
 	return nil
 }
 
-type AddBonusToPlayerRequest struct {
-	Amount         float64  `json:"Amount"`
-	PlayerID       PlayerID `json:"ClientId"`
-	PartnerBonusID int64    `json:"PartnerBonusId"`
-	Type           int      `json:"Type"`
-}
-
-func (c *client) AddBonusToPlayer(ctx context.Context, req AddBonusToPlayerRequest) error {
-	body, err := json.Marshal(req)
-	if err != nil {
-		return err
-	}
-	_, err = makeRequest[any](
+func (c *client) GetPlayer(ctx context.Context, playerID PlayerID) (*Player, error) {
+	return makeRequest[Player](
 		ctx,
-		http.MethodPost,
-		"/Client/AddClientToBonus",
-		bytes.NewReader(body),
+		http.MethodGet,
+		fmt.Sprintf("/Client/GetClientById?id=%d", playerID),
+		nil,
 		c,
 	)
-	if err != nil {
-		return err
-	}
-	return nil
 }

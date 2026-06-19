@@ -8,8 +8,8 @@ type Client interface {
 	ListWithdrawals(ctx context.Context, req ListWithdrawalsRequest) ([]Withdrawal, error)
 
 	ListRegisteredPlayers(ctx context.Context, req ListRegisteredPlayersRequest) ([]RegisteredPlayer, error)
-	ListPlayers(ctx context.Context, req ListPlayersRequest) ([]ListPlayersPlayer, error)
-	SearchClients(ctx context.Context, req SearchClientsRequest) (*SearchClientsResult, error)
+	ListPlayers(ctx context.Context, req ListPlayersRequest) ([]*ListPlayersPlayer, error)
+	GetPlayer(ctx context.Context, playerID PlayerID) (*Player, error)
 	GetClientKPI(ctx context.Context, playerID PlayerID) (*PlayerKPI, error)
 	GetClientRestriction(ctx context.Context, playerID PlayerID) (*GetClientRestrictionResult, error)
 	SaveClientRestriction(ctx context.Context, req SaveClientRestrictionRequest) error
