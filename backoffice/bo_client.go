@@ -9,7 +9,7 @@ import (
 type client struct {
 	httpClient *http.Client
 	authToken  string
-	pool       pool.Pool
+	pool       *pool.Pool
 }
 
 func New(opts ...Option) Client {
@@ -36,7 +36,7 @@ func WithAuthToken(authToken string) Option {
 	}
 }
 
-func WithPool(pool pool.Pool) Option {
+func WithPool(pool *pool.Pool) Option {
 	return func(c *client) {
 		c.pool = pool
 	}
