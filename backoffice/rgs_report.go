@@ -70,9 +70,9 @@ func (c *client) GetCasinoReportByPartner(ctx context.Context, req GetReportByPa
 	httpReq.Header.Set("Content-Type", "application/json;charset=UTF-8")
 	var authToken string
 	if c.pool != nil {
-		at := c.pool.GetAuthToken(ctx)
+		at := c.pool.NextAuthToken(ctx)
 		if at != nil {
-			authToken = at.String()
+			authToken = *at
 		} else {
 			return 0, ErrUnauthorized
 		}

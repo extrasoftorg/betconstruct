@@ -48,10 +48,9 @@ func makeRequest[T any](
 	req.Header.Set("Content-Type", "application/json")
 	var authToken string
 	if c.pool != nil {
-		at := c.pool.GetAuthToken(ctx)
-		fmt.Println(at)
+		at := c.pool.NextAuthToken(ctx)
 		if at != nil {
-			authToken = at.String()
+			authToken = *at
 		} else {
 			return nil, ErrUnauthorized
 		}
@@ -72,14 +71,14 @@ func makeRequest[T any](
 			return nil, ErrBadRequest
 		case http.StatusUnauthorized:
 			if c.pool != nil {
-				if err := c.pool.SetRateLimited(ctx, authToken); err != nil {
+				if err := c.pool.RateLimiter.SetLimited(ctx, authToken); err != nil {
 					return nil, err
 				}
 			}
 			return nil, ErrUnauthorized
 		case http.StatusForbidden:
 			if c.pool != nil {
-				if err := c.pool.SetRateLimited(ctx, authToken); err != nil {
+				if err := c.pool.RateLimiter.SetLimited(ctx, authToken); err != nil {
 					return nil, err
 				}
 			}

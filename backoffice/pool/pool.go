@@ -3,53 +3,54 @@ package pool
 import (
 	"context"
 	"sync"
-	"time"
 )
 
-type Pool interface {
-	// GetAuthToken returns a non-rate-limited auth token from the pool.
-	// If no auth token is available, it returns nil.
-	// It uses a round-robin algorithm to get the next available token.
-	GetAuthToken(ctx context.Context) *AuthToken
-	SetRateLimited(ctx context.Context, token string) error
+type Pool struct {
+	mu          sync.Mutex
+	authTokens  []string
+	nextIndex   int
+	RateLimiter RateLimiter
 }
 
-type pool struct {
-	mu         sync.Mutex
-	authTokens []AuthToken
-	nextIndex  int
-}
-
-func (p *pool) GetAuthToken(ctx context.Context) *AuthToken {
+func (p *Pool) NextAuthToken(ctx context.Context) *string {
 	p.mu.Lock()
-	defer p.mu.Unlock()
+	tokens := p.authTokens
+	start := p.nextIndex
+	p.mu.Unlock()
 
-	n := len(p.authTokens)
+	n := len(tokens)
 	for i := range n {
-		idx := (p.nextIndex + i) % n
-		if !p.authTokens[idx].IsRateLimited() {
-			p.authTokens[idx].setLastUsed(time.Now())
+		idx := (start + i) % n
+		token := tokens[idx]
+		limited, err := p.RateLimiter.IsLimited(ctx, token)
+		if err != nil {
+			continue
+		}
+		if !limited {
+			p.mu.Lock()
 			p.nextIndex = (idx + 1) % n
-			return &p.authTokens[idx]
+			p.mu.Unlock()
+			return &token
 		}
 	}
 	return nil
 }
 
-func (p *pool) SetRateLimited(ctx context.Context, token string) error {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	for i := range p.authTokens {
-		if p.authTokens[i].String() == token {
-			p.authTokens[i].setRateLimited(time.Now())
-			break
-		}
+type Option func(*Pool)
+
+func New(authTokens []string, opts ...Option) *Pool {
+	p := &Pool{
+		authTokens:  authTokens,
+		RateLimiter: NewDefaultRateLimiter(NewDefaultRateLimiterOptions{}),
 	}
-	return nil
+	for _, opt := range opts {
+		opt(p)
+	}
+	return p
 }
 
-func New(authTokens ...AuthToken) Pool {
-	return &pool{
-		authTokens: authTokens,
+func WithRateLimiter(rateLimiter RateLimiter) Option {
+	return func(p *Pool) {
+		p.RateLimiter = rateLimiter
 	}
 }
