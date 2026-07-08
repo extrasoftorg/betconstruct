@@ -71,11 +71,10 @@ func (c *client) GetCasinoReportByPartner(ctx context.Context, req GetReportByPa
 	var authToken string
 	if c.pool != nil {
 		at := c.pool.NextAuthToken(ctx)
-		if at != nil {
-			authToken = *at
-		} else {
-			return 0, ErrUnauthorized
+		if at == nil {
+			return 0, ErrPoolExhausted
 		}
+		authToken = *at
 	} else {
 		authToken = c.authToken
 	}
