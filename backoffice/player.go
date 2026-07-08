@@ -47,6 +47,7 @@ type ListPlayersRequest struct {
 	ToRegistrationDate   time.Time
 	MaxRows              int
 	Username             string
+	Phone                string
 }
 
 func (r ListPlayersRequest) MarshalJSON() ([]byte, error) {
@@ -55,10 +56,12 @@ func (r ListPlayersRequest) MarshalJSON() ([]byte, error) {
 		ToRegistrationDate   *string `json:"MaxCreatedLocal"`
 		MaxRows              int     `json:"MaxRows"`
 		Username             string  `json:"Login"`
+		Phone                string  `json:"Phone"`
 	}
 	w := wire{
 		MaxRows:  r.MaxRows,
 		Username: r.Username,
+		Phone:    r.Phone,
 	}
 	if !r.FromRegistrationDate.IsZero() {
 		date := r.FromRegistrationDate.Format("02-01-06 - 15:04:05")
