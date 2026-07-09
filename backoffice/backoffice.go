@@ -14,9 +14,11 @@ type Client interface {
 	GetClientRestriction(ctx context.Context, playerID PlayerID) (*GetClientRestrictionResult, error)
 	SaveClientRestriction(ctx context.Context, req SaveClientRestrictionRequest) error
 	AddPaymentToPlayer(ctx context.Context, req AddPaymentToPlayerRequest) error
-	AddBonusToPlayer(ctx context.Context, req AddBonusToPlayerRequest) error
 	ListPlayerTransactions(ctx context.Context, req ListPlayerTransactionsRequest) ([]Transaction, error)
 	ListPlayerCasinoGames(ctx context.Context, req ListPlayerCasinoGamesRequest) ([]PlayerCasinoGame, error)
+
+	ListPlayerBonuses(ctx context.Context, playerID PlayerID) ([]PlayerBonus, error)
+	AddBonusToPlayer(ctx context.Context, req AddBonusToPlayerRequest) error
 
 	GetSportKindReport(ctx context.Context, req GetSportKindReportRequest) ([]SportKindReport, error)
 	ListSportBets(ctx context.Context, req ListSportBetsRequest) ([]SportBet, error)
