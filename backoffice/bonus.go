@@ -33,12 +33,27 @@ func (c *client) AddBonusToPlayer(ctx context.Context, req AddBonusToPlayerReque
 	return nil
 }
 
-type BonusStatus string
+type BonusResult string
 
 const (
-	BonusStatusCancelled BonusStatus = "cancelled"
-	BonusStatusPending   BonusStatus = "pending"
-	BonusStatusExpired   BonusStatus = "expired"
+	BonusResultActivated BonusResult = "activated"
+	BonusResultCancelled BonusResult = "cancelled"
+	BonusResultPending   BonusResult = "pending"
+	BonusResultExpired   BonusResult = "expired"
+)
+
+type BonusState string
+
+const (
+	BonusStateActivated BonusState = "activated"
+	BonusStatePending   BonusState = "pending"
+)
+
+type BonusType string
+
+const (
+	BonusTypeFreespin BonusType = "freespin"
+	BonusTypeFreebet  BonusType = "freebet"
 )
 
 type PlayerBonus struct {
@@ -46,19 +61,23 @@ type PlayerBonus struct {
 	Amount    float64
 	Name      string
 	CreatedAt time.Time
-	Status    BonusStatus
+	Result    BonusResult
+	State     BonusState
+	Type      BonusType
 	BonusID   int64
 }
 
 func (b *PlayerBonus) UnmarshalJSON(data []byte) error {
 	type wire struct {
-		ID         int64   `json:"Id"`
-		Amount     float64 `json:"Amount"`
-		Name       string  `json:"Name"`
-		CreatedAt  string  `json:"CreatedLocal"`
-		Count      int     `json:"Count"`
-		ResultType int     `json:"ResultType"`
-		BonusID    int64   `json:"PartnerBonusId"`
+		ID             int64   `json:"Id"`
+		Amount         float64 `json:"Amount"`
+		Name           string  `json:"Name"`
+		CreatedAt      string  `json:"CreatedLocal"`
+		Count          int     `json:"Count"`
+		ResultType     int     `json:"ResultType"`
+		AcceptanceType int     `json:"AcceptanceType"`
+		BonusType      int     `json:"BonusType"`
+		BonusID        int64   `json:"PartnerBonusId"`
 	}
 	var w wire
 	if err := json.Unmarshal(data, &w); err != nil {
@@ -82,13 +101,34 @@ func (b *PlayerBonus) UnmarshalJSON(data []byte) error {
 	switch w.ResultType {
 	// none
 	case 0:
-		b.Status = BonusStatusPending
+		b.Result = BonusResultPending
+	// activated
+	case 1:
+		b.Result = BonusResultActivated
 	// cancelled
 	case 3:
-		b.Status = BonusStatusCancelled
+		b.Result = BonusResultCancelled
 	// expired
 	case 4:
-		b.Status = BonusStatusExpired
+		b.Result = BonusResultExpired
+	}
+
+	switch w.AcceptanceType {
+	// pending
+	case 0:
+		b.State = BonusStatePending
+	// activated
+	case 2:
+		b.State = BonusStateActivated
+	}
+
+	switch w.BonusType {
+	// freespin
+	case 5:
+		b.Type = BonusTypeFreespin
+	// freebet
+	case 6:
+		b.Type = BonusTypeFreebet
 	}
 
 	b.BonusID = w.BonusID
