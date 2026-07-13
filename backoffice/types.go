@@ -11,6 +11,8 @@ import (
 
 type DateTime time.Time
 
+var TimeZone = time.FixedZone("UTC+3", 3*60*60)
+
 func (t DateTime) MarshalJSON() ([]byte, error) {
 	return json.Marshal(time.Time(t).Format(time.RFC3339))
 }
@@ -21,7 +23,7 @@ func (t *DateTime) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	for _, layout := range []string{"2006-01-02T15:04:05.999", "2006-01-02T15:04:05"} {
-		if parsed, err := time.Parse(layout, s); err == nil {
+		if parsed, err := time.ParseInLocation(layout, s, TimeZone); err == nil {
 			*t = DateTime(parsed)
 			return nil
 		}
