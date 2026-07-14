@@ -136,15 +136,11 @@ func (b *PlayerBonus) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-type CancelWageringBonusRequest struct {
+type CancelPlayerBonusRequest struct {
 	BonusID int64 `json:"BonusId"`
 }
 
-type CancelBonus struct {
-	Status string `json:"status"`
-}
-
-func (c *client) CancelWageringBonus(ctx context.Context, req CancelWageringBonusRequest) (*CancelBonus, error) {
+func (c *client) CancelPlayerBonus(ctx context.Context, req CancelPlayerBonusRequest) error {
 	type payload struct {
 		BonusID      int64  `json:"BonusId"`
 		CancelReason string `json:"CancelReason"`
@@ -156,9 +152,9 @@ func (c *client) CancelWageringBonus(ctx context.Context, req CancelWageringBonu
 
 	body, err := json.Marshal(p)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	resp, err := doRequest[any](
+	_, err = makeRequest[any](
 		ctx,
 		http.MethodPost,
 		"/Client/CancelWageringBonusAsync",
@@ -166,9 +162,9 @@ func (c *client) CancelWageringBonus(ctx context.Context, req CancelWageringBonu
 		c,
 	)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return &CancelBonus{Status: resp.AlertType}, nil
+	return nil
 }
 
 func (c *client) ListPlayerBonuses(ctx context.Context, playerID PlayerID) ([]PlayerBonus, error) {
