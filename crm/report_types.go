@@ -33,12 +33,16 @@ const (
 	ReportFilterOpEq  ReportFilterOp = "eq"
 	ReportFilterOpLt  ReportFilterOp = "lt"
 	ReportFilterOpLte ReportFilterOp = "lte"
+	ReportFilterOpGt  ReportFilterOp = "gt"
+	ReportFilterOpGte ReportFilterOp = "gte"
 )
 
 var reportFilterOpMap = map[ReportFilterOp]int{
 	ReportFilterOpEq:  0,
 	ReportFilterOpLt:  6,
 	ReportFilterOpLte: 7,
+	ReportFilterOpGt:  4,
+	ReportFilterOpGte: 5,
 }
 
 type ReportFilterValue interface {
