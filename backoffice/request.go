@@ -17,6 +17,7 @@ type response[T any] struct {
 	Data         T      `json:"Data"`
 	HasError     bool   `json:"HasError"`
 	AlertMessage string `json:"AlertMessage"`
+	AlertType    string `json:"AlertType"`
 }
 
 func makeRequest[T any](
@@ -26,6 +27,20 @@ func makeRequest[T any](
 	body io.Reader,
 	c *client,
 ) (*T, error) {
+	resp, err := doRequest[T](ctx, method, path, body, c)
+	if err != nil {
+		return nil, err
+	}
+	return &resp.Data, nil
+}
+
+func doRequest[T any](
+	ctx context.Context,
+	method string,
+	path string,
+	body io.Reader,
+	c *client,
+) (*response[T], error) {
 	fullURL := fmt.Sprintf("%s%s", baseURL, path)
 	req, err := http.NewRequestWithContext(ctx, method, fullURL, body)
 	if err != nil {
@@ -93,5 +108,5 @@ func makeRequest[T any](
 		return nil, errors.New(data.AlertMessage)
 	}
 
-	return &data.Data, nil
+	return &data, nil
 }

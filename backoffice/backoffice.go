@@ -19,6 +19,7 @@ type Client interface {
 
 	ListPlayerBonuses(ctx context.Context, playerID PlayerID) ([]PlayerBonus, error)
 	AddBonusToPlayer(ctx context.Context, req AddBonusToPlayerRequest) error
+	CancelWageringBonus(ctx context.Context, req CancelWageringBonusRequest) (*CancelBonus, error)
 
 	GetSportKindReport(ctx context.Context, req GetSportKindReportRequest) ([]SportKindReport, error)
 	ListSportBets(ctx context.Context, req ListSportBetsRequest) ([]SportBet, error)
