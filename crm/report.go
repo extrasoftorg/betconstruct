@@ -65,3 +65,25 @@ func (c *client) ListReports(ctx context.Context, pageSize, pageNumber int) ([]R
 	}
 	return results.Data, nil
 }
+
+func (c *client) CreateReport(ctx context.Context, in CreateReportInput) (*CreateReportResponse, error) {
+	payload, err := in.toPayload()
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+
+	type resp struct {
+		ReportID int32 `json:"AdHocReportId"`
+	}
+
+	r, err := makeRequest[resp](ctx, http.MethodPost, "/AdHocReport/Create", bytes.NewReader(body), c, nil)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateReportResponse{ReportID: r.ReportID}, nil
+}
