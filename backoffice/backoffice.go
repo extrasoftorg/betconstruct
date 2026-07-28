@@ -31,4 +31,6 @@ type Client interface {
 	UpdatePaymentMethod(ctx context.Context, method PaymentMethod) error
 	ListPartnerDomains(ctx context.Context, partnerID PartnerID) ([]PartnerDomain, error)
 	SetActiveDomain(ctx context.Context, domainID int32) error
+
+	CreatePromoCode(ctx context.Context, in CreatePromoCodeInput) error
 }
