@@ -50,38 +50,48 @@ type ListPlayersRequest struct {
 	Phone                string
 }
 
-func (r ListPlayersRequest) MarshalJSON() ([]byte, error) {
-	type wire struct {
+func (c *client) ListPlayers(ctx context.Context, req ListPlayersRequest) ([]*ListPlayersPlayer, error) {
+	type payload struct {
 		FromRegistrationDate *string `json:"MinCreatedLocal"`
 		ToRegistrationDate   *string `json:"MaxCreatedLocal"`
 		MaxRows              int     `json:"MaxRows"`
 		Username             string  `json:"Login"`
 		Phone                string  `json:"Phone"`
 	}
-	w := wire{
-		MaxRows:  r.MaxRows,
-		Username: r.Username,
-		Phone:    r.Phone,
+	p := payload{
+		MaxRows:  req.MaxRows,
+		Username: req.Username,
+		Phone:    req.Phone,
 	}
-	if !r.FromRegistrationDate.IsZero() {
-		date := r.FromRegistrationDate.Format("02-01-06 - 15:04:05")
-		w.FromRegistrationDate = &date
+	if !req.FromRegistrationDate.IsZero() {
+		date := req.FromRegistrationDate.Format("02-01-06 - 15:04:05")
+		p.FromRegistrationDate = &date
 	}
-	if !r.ToRegistrationDate.IsZero() {
-		date := r.ToRegistrationDate.Format("02-01-06 - 15:04:05")
-		w.ToRegistrationDate = &date
+	if !req.ToRegistrationDate.IsZero() {
+		date := req.ToRegistrationDate.Format("02-01-06 - 15:04:05")
+		p.ToRegistrationDate = &date
 	}
-	return json.Marshal(w)
-}
 
-func (c *client) ListPlayers(ctx context.Context, req ListPlayersRequest) ([]*ListPlayersPlayer, error) {
-	body, err := req.MarshalJSON()
+	body, err := json.Marshal(p)
 	if err != nil {
 		return nil, err
 	}
-	players, err := makeRequest[struct {
-		Players []*ListPlayersPlayer `json:"Objects"`
-	}](
+
+	type player struct {
+		ID             PlayerID `json:"Id"`
+		CreatedAt      string   `json:"CreatedLocalDate"`
+		Username       string   `json:"Login"`
+		FirstName      string   `json:"FirstName"`
+		MiddleName     string   `json:"MiddleName"`
+		LastName       string   `json:"LastName"`
+		Balance        float64  `json:"Balance"`
+		PlayerCategory int      `json:"SportsbookProfileId"`
+		FirstDepositAt *string  `json:"FirstDepositDateLocal"`
+	}
+	type response struct {
+		Players []*player `json:"Objects"`
+	}
+	players, err := makeRequest[response](
 		ctx,
 		http.MethodPost,
 		"/Client/GetClients",
@@ -91,7 +101,43 @@ func (c *client) ListPlayers(ctx context.Context, req ListPlayersRequest) ([]*Li
 	if err != nil {
 		return nil, err
 	}
-	return players.Players, nil
+
+	res := make([]*ListPlayersPlayer, len(players.Players))
+	for i, p := range players.Players {
+		var pc *PlayerCategory
+		if p.PlayerCategory != 0 {
+			cat := PlayerCategory(p.PlayerCategory)
+			pc = &cat
+		}
+
+		createdAt, err := time.Parse("2006-01-02T15:04:05.999999", p.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		var firstDepositAt *time.Time
+		if p.FirstDepositAt != nil {
+			date, err := time.Parse("2006-01-02T15:04:05.999999", *p.FirstDepositAt)
+			if err != nil {
+				return nil, err
+			}
+			firstDepositAt = &date
+		}
+
+		res[i] = &ListPlayersPlayer{
+			ID:             p.ID,
+			CreatedAt:      createdAt,
+			Username:       p.Username,
+			FirstName:      p.FirstName,
+			MiddleName:     p.MiddleName,
+			LastName:       p.LastName,
+			Balance:        p.Balance,
+			PlayerCategory: pc,
+			FirstDepositAt: firstDepositAt,
+		}
+	}
+
+	return res, nil
 }
 
 func (c *client) GetClientKPI(ctx context.Context, playerID PlayerID) (*PlayerKPI, error) {

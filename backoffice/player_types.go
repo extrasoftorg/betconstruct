@@ -1,7 +1,7 @@
 package backoffice
 
 import (
-	"encoding/json"
+	"time"
 )
 
 type PlayerID int64
@@ -10,40 +10,40 @@ func (p PlayerID) Int64() int64 {
 	return int64(p)
 }
 
-type PlayerCategory string
+type PlayerCategory int
 
-func (p PlayerCategory) String() string {
-	return string(p)
+func (p PlayerCategory) Int() int {
+	return int(p)
 }
 
-func (p *PlayerCategory) UnmarshalJSON(b []byte) error {
-	var id int
-	if err := json.Unmarshal(b, &id); err != nil {
-		return err
-	}
-	switch id {
-	case 10:
-		*p = PlayerCategoryTestUser
-	default:
-		*p = PlayerCategoryUnknown
-	}
-	return nil
-}
+type PlayerCategoryEnum string
 
 const (
-	PlayerCategoryTestUser PlayerCategory = "testuser"
-	PlayerCategoryUnknown  PlayerCategory = "unknown"
+	PlayerCategoryTestUser PlayerCategoryEnum = "testuser"
 )
 
+var playerCategoryToEnum = map[PlayerCategory]PlayerCategoryEnum{
+	10: PlayerCategoryTestUser,
+}
+
+func (p PlayerCategory) Enum() PlayerCategoryEnum {
+	return playerCategoryToEnum[p]
+}
+
+func (p PlayerCategory) Is(enum PlayerCategoryEnum) bool {
+	return p.Enum() == enum
+}
+
 type ListPlayersPlayer struct {
-	ID             PlayerID        `json:"Id"`
-	CreatedAt      DateTime        `json:"CreatedLocalDate"`
-	Username       string          `json:"Login"`
-	FirstName      string          `json:"FirstName"`
-	MiddleName     string          `json:"MiddleName"`
-	LastName       string          `json:"LastName"`
-	Balance        float64         `json:"Balance"`
-	PlayerCategory *PlayerCategory `json:"SportsbookProfileId"`
+	ID             PlayerID
+	CreatedAt      time.Time
+	Username       string
+	FirstName      string
+	MiddleName     string
+	LastName       string
+	Balance        float64
+	PlayerCategory *PlayerCategory
+	FirstDepositAt *time.Time
 }
 
 type Player struct {
