@@ -55,3 +55,18 @@ type Player struct {
 	Phone      string   `json:"Phone"`
 	Username   string   `json:"Login"`
 }
+
+type PlayerKPI struct {
+	PlayerID              PlayerID
+	TotalDepositAmount    float64
+	DepositCount          int32
+	TotalWithdrawalAmount float64
+	WithdrawalCount       int32
+	LastDepositAmount     float64
+	LastWithdrawalAmount  float64
+	FirstDepositAt        *time.Time
+	LastDepositAt         *time.Time
+	LastWithdrawalAt      *time.Time
+	LastSportBetAt        *time.Time
+	LastCasinoBetAt       *time.Time
+}

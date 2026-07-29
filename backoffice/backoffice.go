@@ -10,7 +10,7 @@ type Client interface {
 	ListRegisteredPlayers(ctx context.Context, req ListRegisteredPlayersRequest) ([]RegisteredPlayer, error)
 	ListPlayers(ctx context.Context, req ListPlayersRequest) ([]*ListPlayersPlayer, error)
 	GetPlayer(ctx context.Context, playerID PlayerID) (*Player, error)
-	GetClientKPI(ctx context.Context, playerID PlayerID) (*PlayerKPI, error)
+	GetPlayerKPI(ctx context.Context, playerID PlayerID) (*PlayerKPI, error)
 	GetClientRestriction(ctx context.Context, playerID PlayerID) (*GetClientRestrictionResult, error)
 	SaveClientRestriction(ctx context.Context, req SaveClientRestrictionRequest) error
 	AddPaymentToPlayer(ctx context.Context, req AddPaymentToPlayerRequest) error

@@ -140,8 +140,23 @@ func (c *client) ListPlayers(ctx context.Context, req ListPlayersRequest) ([]*Li
 	return res, nil
 }
 
-func (c *client) GetClientKPI(ctx context.Context, playerID PlayerID) (*PlayerKPI, error) {
-	kpi, err := makeRequest[PlayerKPI](
+func (c *client) GetPlayerKPI(ctx context.Context, playerID PlayerID) (*PlayerKPI, error) {
+	type response struct {
+		PlayerID              PlayerID `json:"ClientId"`
+		TotalDepositAmount    float64  `json:"DepositAmount"`
+		DepositCount          int32    `json:"DepositCount"`
+		TotalWithdrawalAmount float64  `json:"WithdrawalAmount"`
+		WithdrawalCount       int32    `json:"WithdrawalCount"`
+		LastDepositAmount     float64  `json:"LastDepositAmount"`
+		LastWithdrawalAmount  float64  `json:"LastWithdrawalAmount"`
+		FirstDepositAt        *string  `json:"FirstDepositTimeLocal"`
+		LastDepositAt         *string  `json:"LastDepositTimeLocal"`
+		LastWithdrawalAt      *string  `json:"LastWithdrawalTimeLocal"`
+		LastSportBetAt        *string  `json:"LastSportBetTimeLocal"`
+		LastCasinoBetAt       *string  `json:"LastCasinoBetTimeLocal"`
+	}
+
+	resp, err := makeRequest[response](
 		ctx,
 		http.MethodGet,
 		fmt.Sprintf("/Client/GetClientKpi?id=%d", playerID),
@@ -151,6 +166,53 @@ func (c *client) GetClientKPI(ctx context.Context, playerID PlayerID) (*PlayerKP
 	if err != nil {
 		return nil, err
 	}
+
+	kpi := &PlayerKPI{
+		PlayerID:              resp.PlayerID,
+		TotalDepositAmount:    resp.TotalDepositAmount,
+		DepositCount:          resp.DepositCount,
+		TotalWithdrawalAmount: resp.TotalWithdrawalAmount,
+		WithdrawalCount:       resp.WithdrawalCount,
+		LastDepositAmount:     resp.LastDepositAmount,
+		LastWithdrawalAmount:  resp.LastWithdrawalAmount,
+	}
+
+	if resp.FirstDepositAt != nil {
+		date, err := time.Parse("2006-01-02T15:04:05.999999", *resp.FirstDepositAt)
+		if err != nil {
+			return nil, err
+		}
+		kpi.FirstDepositAt = &date
+	}
+	if resp.LastDepositAt != nil {
+		date, err := time.Parse("2006-01-02T15:04:05.999999", *resp.LastDepositAt)
+		if err != nil {
+			return nil, err
+		}
+		kpi.LastDepositAt = &date
+	}
+	if resp.LastWithdrawalAt != nil {
+		date, err := time.Parse("2006-01-02T15:04:05.999999", *resp.LastWithdrawalAt)
+		if err != nil {
+			return nil, err
+		}
+		kpi.LastWithdrawalAt = &date
+	}
+	if resp.LastSportBetAt != nil {
+		date, err := time.Parse("2006-01-02T15:04:05.999999", *resp.LastSportBetAt)
+		if err != nil {
+			return nil, err
+		}
+		kpi.LastSportBetAt = &date
+	}
+	if resp.LastCasinoBetAt != nil {
+		date, err := time.Parse("2006-01-02T15:04:05.999999", *resp.LastCasinoBetAt)
+		if err != nil {
+			return nil, err
+		}
+		kpi.LastCasinoBetAt = &date
+	}
+
 	return kpi, nil
 }
 
