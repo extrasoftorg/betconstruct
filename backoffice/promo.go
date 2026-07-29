@@ -210,3 +210,95 @@ func (c *client) ListPromoCodes(ctx context.Context, in ListPromoCodesInput) ([]
 
 	return promoCodes, nil
 }
+
+type ListPromoCodeUsagesInput struct {
+	PromoCodeID int64
+	PromoCode   string
+	StartDate   time.Time
+	EndDate     time.Time
+}
+
+type PromoCodeUsage struct {
+	Amount           float64
+	PlayerID         PlayerID
+	PlayerUsername   string
+	PromoCode        string
+	ID               int64
+	PromoCodeID      int64
+	PromoCodeType    int
+	PromoCodeBonusID *int64
+	CreatedAt        time.Time
+}
+
+type listPromoCodeUsagesPayload struct {
+	PromoCodeID string `json:"PromoCodeId"`
+	PromoCode   string `json:"Code"`
+	StartDate   string `json:"StartTimeLocal"`
+	EndDate     string `json:"EndTimeLocal"`
+}
+
+func (in ListPromoCodeUsagesInput) toPayload() (*listPromoCodeUsagesPayload, error) {
+	var promoCodeID string
+	if in.PromoCodeID != 0 {
+		promoCodeID = strconv.FormatInt(in.PromoCodeID, 10)
+	}
+	return &listPromoCodeUsagesPayload{
+		PromoCodeID: promoCodeID,
+		PromoCode:   in.PromoCode,
+		StartDate:   in.StartDate.Format("02-01-06 - 15:04:05"),
+		EndDate:     in.EndDate.Format("02-01-06 - 15:04:05"),
+	}, nil
+}
+
+func (c *client) ListPromoCodeUsages(ctx context.Context, in ListPromoCodeUsagesInput) ([]*PromoCodeUsage, error) {
+	payload, err := in.toPayload()
+
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+
+	type usage struct {
+		Amount           float64  `json:"Amount"`
+		PlayerID         PlayerID `json:"PlayerId"`
+		PlayerUsername   string   `json:"Login"`
+		PromoCode        string   `json:"Code"`
+		ID               int64    `json:"Id"`
+		PromoCodeID      int64    `json:"PromoCodeId"`
+		PromoCodeType    int      `json:"PromoCodeType"`
+		PromoCodeBonusID *int64   `json:"PromoCodeBonusId"`
+		CreatedAt        string   `json:"CreatedDateLocal"`
+	}
+
+	resp, err := makeRequest[[]*usage](
+		ctx,
+		http.MethodPost,
+		"/Report/GetClientPromoCodes",
+		bytes.NewReader(body),
+		c,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	usages := make([]*PromoCodeUsage, len(*resp))
+	for i, usage := range *resp {
+		usg := &PromoCodeUsage{
+			Amount:           usage.Amount,
+			PlayerID:         usage.PlayerID,
+			PlayerUsername:   usage.PlayerUsername,
+			PromoCode:        usage.PromoCode,
+			ID:               usage.ID,
+			PromoCodeID:      usage.PromoCodeID,
+			PromoCodeType:    usage.PromoCodeType,
+			PromoCodeBonusID: usage.PromoCodeBonusID,
+		}
+		usg.CreatedAt, err = time.Parse("2006-01-02T15:04:05.99999", usage.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		usages[i] = usg
+	}
+
+	return usages, nil
+}

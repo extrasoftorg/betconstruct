@@ -34,4 +34,5 @@ type Client interface {
 
 	CreatePromoCode(ctx context.Context, in CreatePromoCodeInput) error
 	ListPromoCodes(ctx context.Context, in ListPromoCodesInput) ([]PromoCode, error)
+	ListPromoCodeUsages(ctx context.Context, in ListPromoCodeUsagesInput) ([]*PromoCodeUsage, error)
 }
