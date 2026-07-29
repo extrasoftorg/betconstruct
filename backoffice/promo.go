@@ -118,3 +118,95 @@ func (c *client) CreatePromoCode(ctx context.Context, in CreatePromoCodeInput) e
 	)
 	return err
 }
+
+type PromoCode struct {
+	ID        int64
+	Code      string
+	CreatedAt time.Time
+	EndDate   time.Time
+	StartDate time.Time
+	MaxUses   int
+	UsedCount int
+	Type      int
+}
+
+type ListPromoCodesInput struct {
+	Code string
+}
+
+type listPromoCodesPayload struct {
+	Code string `json:"Code"`
+}
+
+func (in ListPromoCodesInput) toPayload() (*listPromoCodesPayload, error) {
+	return &listPromoCodesPayload{
+		Code: in.Code,
+	}, nil
+}
+
+func (c *client) ListPromoCodes(ctx context.Context, in ListPromoCodesInput) ([]PromoCode, error) {
+	payload, err := in.toPayload()
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+
+	type responsePromoCode struct {
+		ID        int64  `json:"Id"`
+		Code      string `json:"Code"`
+		CreatedAt string `json:"Created"`
+		EndDate   string `json:"EndDateLocal"`
+		StartDate string `json:"StartDateLocal"`
+		MaxCount  int    `json:"MaxCount"`
+		UsedCount int    `json:"UsedCount"`
+		Type      int    `json:"TypeId"`
+	}
+
+	type response struct {
+		Count      int                 `json:"Count"`
+		PromoCodes []responsePromoCode `json:"Objects"`
+	}
+
+	resp, err := makeRequest[response](
+		ctx,
+		http.MethodPost,
+		"/Reference/GetPromoCodesPagingAsync",
+		bytes.NewReader(body),
+		c,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	promoCodes := make([]PromoCode, len(resp.PromoCodes))
+	for i, promoCode := range resp.PromoCodes {
+		pc := PromoCode{
+			ID:        promoCode.ID,
+			Code:      promoCode.Code,
+			MaxUses:   promoCode.MaxCount,
+			UsedCount: promoCode.UsedCount,
+			Type:      promoCode.Type,
+		}
+
+		pc.CreatedAt, err = time.Parse("2006-01-02T15:04:05.99999Z07:00", promoCode.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		pc.EndDate, err = time.Parse("02-01-06 - 15:04:05", promoCode.EndDate)
+		if err != nil {
+			return nil, err
+		}
+		pc.StartDate, err = time.Parse("02-01-06 - 15:04:05", promoCode.StartDate)
+		if err != nil {
+			return nil, err
+		}
+
+		promoCodes[i] = pc
+	}
+
+	return promoCodes, nil
+}

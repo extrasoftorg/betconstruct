@@ -33,4 +33,5 @@ type Client interface {
 	SetActiveDomain(ctx context.Context, domainID int32) error
 
 	CreatePromoCode(ctx context.Context, in CreatePromoCodeInput) error
+	ListPromoCodes(ctx context.Context, in ListPromoCodesInput) ([]PromoCode, error)
 }
