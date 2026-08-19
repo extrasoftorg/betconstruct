@@ -24,7 +24,6 @@ type Client interface {
 	GetSportKindReport(ctx context.Context, req GetSportKindReportRequest) ([]SportKindReport, error)
 	ListSportBets(ctx context.Context, req ListSportBetsRequest) ([]SportBet, error)
 	GetBetHistory(ctx context.Context, req ListSportBetsRequest) (*GetBetHistoryResult, error)
-	GetCasinoReportByPartner(ctx context.Context, req GetReportByPartnerRequest) (float64, error)
 
 	ListPaymentMethods(ctx context.Context, req ListPaymentMethodsRequest) ([]*PaymentMethod, error)
 	FindPaymentMethodByName(ctx context.Context, name string) (*PaymentMethod, error)
