@@ -17,6 +17,7 @@ const (
 	ReportColumnLastDepositDate    ReportColumn = "LastDepositDate"
 	ReportColumnTotalDepositAmount ReportColumn = "TotalDepositAmount"
 	ReportColumnDepositActivity    ReportColumn = "DepositActivity"
+	ReportColumnDepositDate        ReportColumn = "DepositDate"
 )
 
 var reportColumnIDMap = map[ReportColumn]int{
@@ -25,6 +26,7 @@ var reportColumnIDMap = map[ReportColumn]int{
 	ReportColumnLastDepositDate:    712,
 	ReportColumnTotalDepositAmount: 223,
 	ReportColumnDepositActivity:    634,
+	ReportColumnDepositDate:        97,
 }
 
 type ReportFilterOp string
