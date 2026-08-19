@@ -2,24 +2,28 @@ package backoffice
 
 import (
 	"net/http"
-
-	"github.com/extrasoftorg/betconstruct/backoffice/pool"
 )
 
 type client struct {
-	httpClient *http.Client
-	authToken  string
-	pool       *pool.Pool
+	httpClient  *http.Client
+	ts          TokenSource
+	maxAttempts int
 }
 
-func New(opts ...Option) Client {
+func New(opts ...Option) (Client, error) {
 	c := &client{
-		httpClient: &http.Client{},
+		httpClient:  &http.Client{},
+		maxAttempts: 3,
 	}
 	for _, opt := range opts {
 		opt(c)
 	}
-	return c
+
+	if c.ts == nil {
+		return nil, ErrMissingTokenSource
+	}
+
+	return c, nil
 }
 
 type Option func(c *client)
@@ -32,12 +36,18 @@ func WithHTTPClient(httpClient *http.Client) Option {
 
 func WithAuthToken(authToken string) Option {
 	return func(c *client) {
-		c.authToken = authToken
+		c.ts = &staticTokenSource{token: authToken}
 	}
 }
 
-func WithPool(pool *pool.Pool) Option {
+func WithTokenSource(ts TokenSource) Option {
 	return func(c *client) {
-		c.pool = pool
+		c.ts = ts
+	}
+}
+
+func WithMaxAttempts(maxAttempts int) Option {
+	return func(c *client) {
+		c.maxAttempts = maxAttempts
 	}
 }

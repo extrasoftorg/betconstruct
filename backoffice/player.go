@@ -1,7 +1,6 @@
 package backoffice
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -33,7 +32,7 @@ func (c *client) ListRegisteredPlayers(ctx context.Context, req ListRegisteredPl
 		ctx,
 		http.MethodPost,
 		"/Client/GetClientRegistrationStatisticsDetails",
-		bytes.NewReader(body),
+		body,
 		c,
 	)
 	if err != nil {
@@ -95,7 +94,7 @@ func (c *client) ListPlayers(ctx context.Context, req ListPlayersRequest) ([]*Li
 		ctx,
 		http.MethodPost,
 		"/Client/GetClients",
-		bytes.NewReader(body),
+		body,
 		c,
 	)
 	if err != nil {
@@ -266,7 +265,7 @@ func (c *client) SaveClientRestriction(ctx context.Context, req SaveClientRestri
 		ctx,
 		http.MethodPost,
 		"/Client/SaveClientRestriction",
-		bytes.NewReader(body),
+		body,
 		c,
 	)
 	return err
@@ -317,7 +316,7 @@ func (c *client) AddPaymentToPlayer(ctx context.Context, req AddPaymentToPlayerR
 		ctx,
 		http.MethodPost,
 		"/Client/CreateClientPaymentDocument",
-		bytes.NewReader(body),
+		body,
 		c,
 	)
 	if err != nil {

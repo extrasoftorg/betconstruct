@@ -16,5 +16,6 @@ var (
 	ErrServiceUnavailable  = errors.New("service unavailable")
 	ErrUnexpectedStatus    = errors.New("unexpected status")
 
-	ErrPoolExhausted = errors.New("pool exhausted")
+	ErrRateLimited        = errors.New("rate limited")
+	ErrMissingTokenSource = errors.New("missing token source")
 )

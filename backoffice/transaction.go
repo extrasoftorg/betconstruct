@@ -1,7 +1,6 @@
 package backoffice
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -65,7 +64,7 @@ func (c *client) ListPlayerTransactions(ctx context.Context, req ListPlayerTrans
 		ctx,
 		http.MethodPost,
 		"/Client/GetClientTransactionsV1",
-		bytes.NewReader(body),
+		body,
 		c,
 	)
 	if err != nil {
@@ -90,7 +89,7 @@ func (c *client) ListPlayerCasinoGames(ctx context.Context, req ListPlayerCasino
 		ctx,
 		http.MethodPost,
 		"/Client/GetClientCasinoGames",
-		bytes.NewReader(body),
+		body,
 		c,
 	)
 	if err != nil {

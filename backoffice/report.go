@@ -1,7 +1,6 @@
 package backoffice
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -52,7 +51,7 @@ func (c *client) GetBetHistory(ctx context.Context, req ListSportBetsRequest) (*
 		ctx,
 		http.MethodPost,
 		"/Report/GetBetHistory",
-		bytes.NewReader(body),
+		body,
 		c,
 	)
 	if err != nil {
@@ -107,7 +106,7 @@ func (c *client) GetSportKindReport(ctx context.Context, req GetSportKindReportR
 	if err != nil {
 		return nil, err
 	}
-	results, err := makeRequest[[]SportKindReport](ctx, http.MethodPost, "/Report/GetSportKindReport", bytes.NewReader(body), c)
+	results, err := makeRequest[[]SportKindReport](ctx, http.MethodPost, "/Report/GetSportKindReport", body, c)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +122,7 @@ func (c *client) ListSportBets(ctx context.Context, req ListSportBetsRequest) ([
 		ctx,
 		http.MethodPost,
 		"/Report/GetBetHistory",
-		bytes.NewReader(body),
+		body,
 		c,
 	)
 	if err != nil {
