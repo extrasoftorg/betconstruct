@@ -1,7 +1,6 @@
 package backoffice
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -46,7 +45,7 @@ func (c *client) ListWithdrawals(ctx context.Context, req ListWithdrawalsRequest
 		ctx,
 		http.MethodPost,
 		"/Client/GetClientWithdrawalRequestsWithTotals",
-		bytes.NewReader(body),
+		body,
 		c,
 	)
 	if err != nil {

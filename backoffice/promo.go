@@ -1,7 +1,6 @@
 package backoffice
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -113,7 +112,7 @@ func (c *client) CreatePromoCode(ctx context.Context, in CreatePromoCodeInput) e
 		ctx,
 		http.MethodPost,
 		"/Reference/SavePromoCodeWithItemsAsync",
-		bytes.NewReader(body),
+		body,
 		c,
 	)
 	return err
@@ -175,7 +174,7 @@ func (c *client) ListPromoCodes(ctx context.Context, in ListPromoCodesInput) ([]
 		ctx,
 		http.MethodPost,
 		"/Reference/GetPromoCodesPagingAsync",
-		bytes.NewReader(body),
+		body,
 		c,
 	)
 	if err != nil {
@@ -274,7 +273,7 @@ func (c *client) ListPromoCodeUsages(ctx context.Context, in ListPromoCodeUsages
 		ctx,
 		http.MethodPost,
 		"/Report/GetClientPromoCodes",
-		bytes.NewReader(body),
+		body,
 		c,
 	)
 	if err != nil {

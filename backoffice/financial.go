@@ -1,7 +1,6 @@
 package backoffice
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -36,7 +35,7 @@ func (c *client) ListTransactions(ctx context.Context, req ListTransactionsReque
 		ctx,
 		http.MethodPost,
 		"/Financial/GetDocumentsWithPaging",
-		bytes.NewReader(body),
+		body,
 		c,
 	)
 	if err != nil {
@@ -74,7 +73,7 @@ func (c *client) ListDeposits(ctx context.Context, req ListDepositsRequest) ([]D
 		ctx,
 		http.MethodPost,
 		"/Financial/GetDepositsWithdrawalsWithPaging",
-		bytes.NewReader(body),
+		body,
 		c,
 	)
 	if err != nil {

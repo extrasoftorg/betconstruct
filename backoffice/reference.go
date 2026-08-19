@@ -1,7 +1,6 @@
 package backoffice
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -53,7 +52,7 @@ func (c *client) ListPaymentMethods(ctx context.Context, req ListPaymentMethodsR
 		return nil, err
 	}
 
-	methods, err := makeRequest[[]*PaymentMethod](ctx, http.MethodPost, "/Reference/PaymentAPI", bytes.NewReader(body), c)
+	methods, err := makeRequest[[]*PaymentMethod](ctx, http.MethodPost, "/Reference/PaymentAPI", body, c)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +77,7 @@ func (c *client) FindPaymentMethodByName(ctx context.Context, name string) (*Pay
 		return nil, err
 	}
 
-	methods, err := makeRequest[[]PaymentMethod](ctx, http.MethodPost, "/Reference/PaymentAPI", bytes.NewReader(body), c)
+	methods, err := makeRequest[[]PaymentMethod](ctx, http.MethodPost, "/Reference/PaymentAPI", body, c)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +108,7 @@ func (c *client) UpdatePaymentMethod(ctx context.Context, method PaymentMethod) 
 		return err
 	}
 
-	_, err = makeRequest[any](ctx, http.MethodPost, "/Reference/PaymentAPI", bytes.NewReader(body), c)
+	_, err = makeRequest[any](ctx, http.MethodPost, "/Reference/PaymentAPI", body, c)
 	return err
 }
 
@@ -135,6 +134,6 @@ func (c *client) SetActiveDomain(ctx context.Context, domainID int32) error {
 	if err != nil {
 		return err
 	}
-	_, err = makeRequest[any](ctx, http.MethodPost, "/Reference/SetActiveDomain", bytes.NewReader(body), c)
+	_, err = makeRequest[any](ctx, http.MethodPost, "/Reference/SetActiveDomain", body, c)
 	return err
 }

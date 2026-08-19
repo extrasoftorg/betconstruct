@@ -1,7 +1,6 @@
 package backoffice
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -24,7 +23,7 @@ func (c *client) AddBonusToPlayer(ctx context.Context, req AddBonusToPlayerReque
 		ctx,
 		http.MethodPost,
 		"/Client/AddClientToBonus",
-		bytes.NewReader(body),
+		body,
 		c,
 	)
 	if err != nil {
@@ -158,7 +157,7 @@ func (c *client) CancelPlayerBonus(ctx context.Context, req CancelPlayerBonusReq
 		ctx,
 		http.MethodPost,
 		"/Client/CancelWageringBonusAsync",
-		bytes.NewReader(body),
+		body,
 		c,
 	)
 	if err != nil {
@@ -183,7 +182,7 @@ func (c *client) ListPlayerBonuses(ctx context.Context, playerID PlayerID) ([]Pl
 		ctx,
 		http.MethodPost,
 		"/Client/GetClientBonuses",
-		bytes.NewReader(body),
+		body,
 		c,
 	)
 	if err != nil {
