@@ -77,14 +77,6 @@ type Transaction struct {
 	CreatedAt DateTime        `json:"CreatedLocal"`
 }
 
-type Deposit struct {
-	ID            int64    `json:"Id"`
-	Amount        float64  `json:"Amount"`
-	PlayerID      PlayerID `json:"ClientId"`
-	CreatedAt     DateTime `json:"CreatedLocal"`
-	PaymentMethod string   `json:"PaymentSystemName"`
-}
-
 type WithdrawalStatus string
 
 func (w WithdrawalStatus) String() string {

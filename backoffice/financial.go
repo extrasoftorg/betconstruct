@@ -53,31 +53,8 @@ func (d ListDepositsRequestDate) MarshalJSON() ([]byte, error) {
 	return json.Marshal(time.Time(d.Time).Format(layout))
 }
 
-type ListDepositsRequest struct {
-	FromDate *ListDepositsRequestDate `json:"FromCreatedDateLocal"`
-	ToDate   *ListDepositsRequestDate `json:"ToCreatedDateLocal"`
-}
-
 type listDepositsResponse struct {
 	Documents struct {
 		Deposits []Deposit `json:"Objects"`
 	} `json:"Documents"`
-}
-
-func (c *client) ListDeposits(ctx context.Context, req ListDepositsRequest) ([]Deposit, error) {
-	body, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-	deposits, err := makeRequest[listDepositsResponse](
-		ctx,
-		http.MethodPost,
-		"/Financial/GetDepositsWithdrawalsWithPaging",
-		body,
-		c,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return deposits.Documents.Deposits, nil
 }
