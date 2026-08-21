@@ -43,18 +43,3 @@ func (c *client) ListTransactions(ctx context.Context, req ListTransactionsReque
 	}
 	return transactions.Transactions, nil
 }
-
-type ListDepositsRequestDate struct {
-	time.Time
-}
-
-func (d ListDepositsRequestDate) MarshalJSON() ([]byte, error) {
-	layout := "02-01-06 - 15:04:05"
-	return json.Marshal(time.Time(d.Time).Format(layout))
-}
-
-type listDepositsResponse struct {
-	Documents struct {
-		Deposits []Deposit `json:"Objects"`
-	} `json:"Documents"`
-}

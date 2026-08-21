@@ -17,13 +17,15 @@ type listDepositsPayload struct {
 	ToDate   *string `json:"ToCreatedDateLocal"`
 }
 
-func (in ListDepositsInput) wire() listDepositsPayload {
+func (in ListDepositsInput) wire(loc *time.Location) listDepositsPayload {
 	p := listDepositsPayload{}
 	if !in.FromDate.IsZero() {
+		in.FromDate = in.FromDate.In(loc)
 		fromDate := in.FromDate.Format("02-01-06 - 15:04:05")
 		p.FromDate = &fromDate
 	}
 	if !in.ToDate.IsZero() {
+		in.ToDate = in.ToDate.In(loc)
 		toDate := in.ToDate.Format("02-01-06 - 15:04:05")
 		p.ToDate = &toDate
 	}
@@ -42,7 +44,7 @@ type Deposit struct {
 }
 
 func (c *client) ListDeposits(ctx context.Context, in ListDepositsInput) ([]Deposit, error) {
-	body, err := json.Marshal(in.wire())
+	body, err := json.Marshal(in.wire(c.timeLocation))
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +77,7 @@ func (c *client) ListDeposits(ctx context.Context, in ListDepositsInput) ([]Depo
 
 	deposits := make([]Deposit, len(resp.Documents.Deposits))
 	for i, d := range resp.Documents.Deposits {
-		createdAt, err := time.Parse("2006-01-02T15:04:05.999", d.CreatedAt)
+		createdAt, err := time.ParseInLocation("2006-01-02T15:04:05.999", d.CreatedAt, c.timeLocation)
 		if err != nil {
 			return nil, err
 		}
@@ -85,7 +87,7 @@ func (c *client) ListDeposits(ctx context.Context, in ListDepositsInput) ([]Depo
 			Amount:          d.Amount,
 			PlayerID:        PlayerID(d.PlayerID),
 			PaymentMethod:   d.PaymentMethod,
-			CreatedAt:       createdAt,
+			CreatedAt:       createdAt.UTC(),
 			Currency:        d.Curreny,
 			PartnerID:       d.PartnerID,
 			PaymentMethodID: d.PaymentMethodID,

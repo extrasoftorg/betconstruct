@@ -63,10 +63,12 @@ func (c *client) ListPlayers(ctx context.Context, req ListPlayersRequest) ([]*Li
 		Phone:    req.Phone,
 	}
 	if !req.FromRegistrationDate.IsZero() {
+		req.FromRegistrationDate = req.FromRegistrationDate.In(c.timeLocation)
 		date := req.FromRegistrationDate.Format("02-01-06 - 15:04:05")
 		p.FromRegistrationDate = &date
 	}
 	if !req.ToRegistrationDate.IsZero() {
+		req.ToRegistrationDate = req.ToRegistrationDate.In(c.timeLocation)
 		date := req.ToRegistrationDate.Format("02-01-06 - 15:04:05")
 		p.ToRegistrationDate = &date
 	}
@@ -109,18 +111,19 @@ func (c *client) ListPlayers(ctx context.Context, req ListPlayersRequest) ([]*Li
 			pc = &cat
 		}
 
-		createdAt, err := time.Parse("2006-01-02T15:04:05.999999", p.CreatedAt)
+		createdAt, err := time.ParseInLocation("2006-01-02T15:04:05.999", p.CreatedAt, c.timeLocation)
 		if err != nil {
 			return nil, err
 		}
+		createdAt = createdAt.UTC()
 
-		var firstDepositAt *time.Time
+		var firstDepositAt time.Time
 		if p.FirstDepositAt != nil {
-			date, err := time.Parse("2006-01-02T15:04:05.999999", *p.FirstDepositAt)
+			date, err := time.ParseInLocation("2006-01-02T15:04:05.999", *p.FirstDepositAt, c.timeLocation)
 			if err != nil {
 				return nil, err
 			}
-			firstDepositAt = &date
+			firstDepositAt = date.UTC()
 		}
 
 		res[i] = &ListPlayersPlayer{
@@ -177,39 +180,39 @@ func (c *client) GetPlayerKPI(ctx context.Context, playerID PlayerID) (*PlayerKP
 	}
 
 	if resp.FirstDepositAt != nil {
-		date, err := time.Parse("2006-01-02T15:04:05.999999", *resp.FirstDepositAt)
+		date, err := time.ParseInLocation("2006-01-02T15:04:05.999", *resp.FirstDepositAt, c.timeLocation)
 		if err != nil {
 			return nil, err
 		}
-		kpi.FirstDepositAt = &date
+		kpi.FirstDepositAt = date.UTC()
 	}
 	if resp.LastDepositAt != nil {
-		date, err := time.Parse("2006-01-02T15:04:05.999999", *resp.LastDepositAt)
+		date, err := time.ParseInLocation("2006-01-02T15:04:05.999", *resp.LastDepositAt, c.timeLocation)
 		if err != nil {
 			return nil, err
 		}
-		kpi.LastDepositAt = &date
+		kpi.LastDepositAt = date.UTC()
 	}
 	if resp.LastWithdrawalAt != nil {
-		date, err := time.Parse("2006-01-02T15:04:05.999999", *resp.LastWithdrawalAt)
+		date, err := time.ParseInLocation("2006-01-02T15:04:05.999999", *resp.LastWithdrawalAt, c.timeLocation)
 		if err != nil {
 			return nil, err
 		}
-		kpi.LastWithdrawalAt = &date
+		kpi.LastWithdrawalAt = date.UTC()
 	}
 	if resp.LastSportBetAt != nil {
-		date, err := time.Parse("2006-01-02T15:04:05.999999", *resp.LastSportBetAt)
+		date, err := time.ParseInLocation("2006-01-02T15:04:05.999999", *resp.LastSportBetAt, c.timeLocation)
 		if err != nil {
 			return nil, err
 		}
-		kpi.LastSportBetAt = &date
+		kpi.LastSportBetAt = date.UTC()
 	}
 	if resp.LastCasinoBetAt != nil {
-		date, err := time.Parse("2006-01-02T15:04:05.999999", *resp.LastCasinoBetAt)
+		date, err := time.ParseInLocation("2006-01-02T15:04:05.999999", *resp.LastCasinoBetAt, c.timeLocation)
 		if err != nil {
 			return nil, err
 		}
-		kpi.LastCasinoBetAt = &date
+		kpi.LastCasinoBetAt = date.UTC()
 	}
 
 	return kpi, nil

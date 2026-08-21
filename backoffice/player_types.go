@@ -43,7 +43,7 @@ type ListPlayersPlayer struct {
 	LastName       string
 	Balance        float64
 	PlayerCategory *PlayerCategory
-	FirstDepositAt *time.Time
+	FirstDepositAt time.Time
 }
 
 type Player struct {
@@ -64,9 +64,9 @@ type PlayerKPI struct {
 	WithdrawalCount       int32
 	LastDepositAmount     float64
 	LastWithdrawalAmount  float64
-	FirstDepositAt        *time.Time
-	LastDepositAt         *time.Time
-	LastWithdrawalAt      *time.Time
-	LastSportBetAt        *time.Time
-	LastCasinoBetAt       *time.Time
+	FirstDepositAt        time.Time
+	LastDepositAt         time.Time
+	LastWithdrawalAt      time.Time
+	LastSportBetAt        time.Time
+	LastCasinoBetAt       time.Time
 }
