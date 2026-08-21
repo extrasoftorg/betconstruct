@@ -10,15 +10,22 @@ import (
 type ListDepositsInput struct {
 	FromDate time.Time
 	ToDate   time.Time
+	Limit    int
+	Offset   int
 }
 
 type listDepositsPayload struct {
-	FromDate *string `json:"FromCreatedDateLocal"`
-	ToDate   *string `json:"ToCreatedDateLocal"`
+	FromDate  *string `json:"FromCreatedDateLocal"`
+	ToDate    *string `json:"ToCreatedDateLocal"`
+	MaxRows   int     `json:"MaxRows"`
+	SkeepRows int     `json:"SkeepRows"`
 }
 
 func (in ListDepositsInput) wire(loc *time.Location) listDepositsPayload {
-	p := listDepositsPayload{}
+	p := listDepositsPayload{
+		MaxRows:   20,
+		SkeepRows: 0,
+	}
 	if !in.FromDate.IsZero() {
 		in.FromDate = in.FromDate.In(loc)
 		fromDate := in.FromDate.Format("02-01-06 - 15:04:05")
@@ -29,7 +36,20 @@ func (in ListDepositsInput) wire(loc *time.Location) listDepositsPayload {
 		toDate := in.ToDate.Format("02-01-06 - 15:04:05")
 		p.ToDate = &toDate
 	}
+
+	if in.Limit > 0 {
+		p.MaxRows = in.Limit
+	}
+	if in.Offset > 0 {
+		p.SkeepRows = in.Offset
+	}
+
 	return p
+}
+
+type ListDepositsOutput struct {
+	Deposits []Deposit
+	Count    int
 }
 
 type Deposit struct {
@@ -43,7 +63,7 @@ type Deposit struct {
 	PaymentMethodID int32
 }
 
-func (c *client) ListDeposits(ctx context.Context, in ListDepositsInput) ([]Deposit, error) {
+func (c *client) ListDeposits(ctx context.Context, in ListDepositsInput) (*ListDepositsOutput, error) {
 	body, err := json.Marshal(in.wire(c.timeLocation))
 	if err != nil {
 		return nil, err
@@ -62,6 +82,7 @@ func (c *client) ListDeposits(ctx context.Context, in ListDepositsInput) ([]Depo
 	type response struct {
 		Documents struct {
 			Deposits []responseDeposit `json:"Objects"`
+			Count    int               `json:"Count"`
 		} `json:"Documents"`
 	}
 	resp, err := makeRequest[response](
@@ -95,5 +116,8 @@ func (c *client) ListDeposits(ctx context.Context, in ListDepositsInput) ([]Depo
 		deposits[i] = deposit
 	}
 
-	return deposits, nil
+	return &ListDepositsOutput{
+		Deposits: deposits,
+		Count:    resp.Documents.Count,
+	}, nil
 }
